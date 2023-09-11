@@ -6,15 +6,16 @@ public:
     // стандартный конструктор
     FlatMap()
     {
-        key = new std::string();
-        value = new std::string();
+        Element = new element;
+        Element->key = new std::string();
+        Element->value = new std::string();
     }
 
     // конструктор копирования
-    FlatMap(const FlatMap &other_map)
-    {
-        this->key = new std::string(*other_map.key);
-        this->value = new std::string(*other_map.value);
+    FlatMap(const FlatMap& other_map)
+    {   Element = new element;
+        this->Element->key = new std::string(*other_map.Element->key);
+        this->Element->value = new std::string(*other_map.Element->value);
     }
 
     // деструктор
@@ -25,13 +26,13 @@ public:
     }
 
     // перегрузка оператора присваивания
-    FlatMap& operator=(const FlatMap &other_map)
+    FlatMap& operator=(const FlatMap& other_map)
     {
-        delete this->key;
-        delete this->value;
+        delete this->Element->key;
+        delete this->Element->value;
 
-        this->key = new std::string(*other_map.key);
-        this->value = new std::string(*other_map.value);
+        this->Element->key = new std::string(*other_map.Element->key);
+        this->Element->value = new std::string(*other_map.Element->value);
 
         return *this;
     }
@@ -52,13 +53,17 @@ public:
     // void clear();
 
 private:
-    std::string *key;
-    std::string *value;
+    struct element
+    {
+        std::string* key;
+        std::string* value;
+    };
+
+    element* Element;
 };
 
 
 int main()
 {
-    
     return 0;
 }
