@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 
-using std::string;
 using std::cout;
 using std::endl;
+using std::string;
 
 class FlatMap
 {
@@ -29,7 +29,6 @@ public:
             Map[i].key = new string(*(other_map.Map[i].key));
             Map[i].value = new string(*(other_map.Map[i].value));
         }
-
     }
 
     // деструктор
@@ -48,13 +47,13 @@ public:
     }
 
     // перегрузка оператора присваивания
-    FlatMap& operator=(const FlatMap &other_map)
+    FlatMap &operator=(const FlatMap &other_map)
     {
         for (std::size_t i = 0; i < capacity; ++i)
         {
             if (Map[i].key != nullptr)
             {
-                delete this->Map[i].key;
+                delete Map[i].key;
                 delete Map[i].value;
             }
             else
@@ -98,7 +97,7 @@ public:
     }
 
     // доступ / вставка элемента по ключу
-    string& operator[](const string &key)
+    string &operator[](const string &key)
     {
         std::size_t mapSize = size();
         if (mapSize != capacity)
@@ -115,7 +114,7 @@ public:
         if (mapSize == capacity)
         {
             capacity *= 2;
-            element* newMap = new element[capacity];
+            element *newMap = new element[capacity];
             for (std::size_t i = 0; i < mapSize; ++i)
             {
                 newMap[i].key = new string(*(Map[i].key));
@@ -129,40 +128,58 @@ public:
         return *(Map[mapSize].value);
     }
 
-    // // возвращает true, если запись с таким ключом присутствует в таблице
-    // bool contains(const string &key);
+    // возвращает true, если запись с таким ключом присутствует в таблице
+    bool contains(const string &key)
+    {
+        std::size_t mapSize = size();
+        for (std::size_t i = 0; i < mapSize; ++i)
+        {
+            if (*(Map[i].key) == key)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    // // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
-    // std::size_t erase(const string &key);
+    // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
+    std::size_t erase(const string &key)
+    {
+        std::size_t mapSize = size();
+        for (std::size_t i = 0; i < mapSize; ++i)
+        {
+            if (*(Map[i].key) == key)
+            {
+                delete Map[i].key;
+                delete Map[i].value;
+                Map[i].key = nullptr;
+                Map[i].value = nullptr;
+                return 1;
+            }
+        }
+        return 0;
+    }
 
-    // // очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
-    // void clear();
+    // очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
+    void clear()
+    {
+        std::size_t mapSize = size();
+        for (std::size_t i = 0; i < mapSize; ++i)
+        {
+            delete Map[i].key;
+            delete Map[i].value;
+            Map[i].key = nullptr;
+            Map[i].value = nullptr;
+        }
+    }
 
-// private:
+private:
     struct element
     {
-        string* key;
-        string* value;
+        string *key;
+        string *value;
     };
 
-    element* Map;
+    element *Map;
     std::size_t capacity;
 };
-
-// int main()
-// {
-//     FlatMap a = FlatMap();
-//     string* d = new string("klND");
-//     string* v = new string("boo");
-//     a.Map[0].key = d;
-//     a.Map[0].value = v;
-//     FlatMap b = FlatMap();
-//     string* g = new string("klkdfnD");
-//     string* h = new string("ooo");
-//     b.Map[0].key = g;
-//     b.Map[0].value = h;
-//     b = a;
-//     // string value = a["klND"];
-//     // cout << value << endl;
-//     return 0;
-// }
