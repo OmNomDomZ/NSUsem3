@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 
+using std::string;
 using std::cout;
 using std::endl;
-using std::string;
 
 class FlatMap
 {
@@ -29,6 +29,7 @@ public:
             Map[i].key = new string(*(other_map.Map[i].key));
             Map[i].value = new string(*(other_map.Map[i].value));
         }
+
     }
 
     // деструктор
@@ -47,7 +48,7 @@ public:
     }
 
     // перегрузка оператора присваивания
-    FlatMap &operator=(const FlatMap &other_map)
+    FlatMap& operator=(const FlatMap &other_map)
     {
         for (std::size_t i = 0; i < capacity; ++i)
         {
@@ -97,7 +98,7 @@ public:
     }
 
     // доступ / вставка элемента по ключу
-    string &operator[](const string &key)
+    string& operator[](const string &key)
     {
         std::size_t mapSize = size();
         if (mapSize != capacity)
@@ -114,7 +115,7 @@ public:
         if (mapSize == capacity)
         {
             capacity *= 2;
-            element *newMap = new element[capacity];
+            element* newMap = new element[capacity];
             for (std::size_t i = 0; i < mapSize; ++i)
             {
                 newMap[i].key = new string(*(Map[i].key));
@@ -134,7 +135,7 @@ public:
         std::size_t mapSize = size();
         for (std::size_t i = 0; i < mapSize; ++i)
         {
-            if (*(Map[i].key) == key)
+            if(*(Map[i].key) == key)
             {
                 return true;
             }
@@ -164,7 +165,7 @@ public:
     void clear()
     {
         std::size_t mapSize = size();
-        for (std::size_t i = 0; i < mapSize; ++i)
+        for(std::size_t i = 0; i < mapSize; ++i)
         {
             delete Map[i].key;
             delete Map[i].value;
@@ -176,10 +177,30 @@ public:
 private:
     struct element
     {
-        string *key;
-        string *value;
+        string* key;
+        string* value;
     };
 
-    element *Map;
+    element* Map;
     std::size_t capacity;
 };
+
+// int main()
+// {
+//     FlatMap a;
+//     string* key = new string("klasdnf");
+//     string* ke1 = new string("asdnf");
+//     string val;
+//     FlatMap b;
+//     FlatMap c = a;
+//     val = a[*key];
+//     val = b[*ke1];
+//     a[*key] = "alskgn";
+//     b = a;
+//     bool v = a.contains(*key);
+//     std::size_t y = a.erase(*key);
+//     a.clear();
+//     int j = a.size();
+//     bool asd = a.contains(*key);
+//     return 0;
+// }
