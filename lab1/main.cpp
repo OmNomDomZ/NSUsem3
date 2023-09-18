@@ -103,14 +103,28 @@ public:
     // возвращает true, если запись с таким ключом присутствует в таблице
     bool contains(const string &key)
     {
-        for (std::size_t i = 0; i < mapSize; ++i)
+        std::size_t left = 0;
+        std::size_t right = mapSize - 1;
+
+        while (left <= right)
         {
-            if(*(Map[i].key) == key)
+            std::size_t mid = left + (right - left) / 2;
+
+            if (*(Map[mid].key) == key)
             {
                 return true;
             }
+            else if (*(Map[mid].key) < key)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
         }
-        return false;
+
+        return false;   
     }
 
     // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
@@ -124,6 +138,7 @@ public:
                 delete Map[i].value;
                 Map[i].key = nullptr;
                 Map[i].value = nullptr;
+                mapSize--;
                 return 1;
             }
         }
@@ -139,6 +154,7 @@ public:
             delete Map[i].value;
             Map[i].key = nullptr;
             Map[i].value = nullptr;
+            mapSize = 0;
         }
     }
 
