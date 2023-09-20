@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using std::string;
 using std::cout;
@@ -7,6 +8,57 @@ using std::endl;
 
 class FlatMap
 {
+
+private:
+    struct element
+    {
+        string key;
+        string value;
+    };
+
+    element* Map;
+    std::size_t capacity;
+    std::size_t mapSize;
+
+    struct indexStatus
+    {
+        std::size_t index;
+        bool contains;
+    };
+
+    bool compareKey(const element& left, const element& right)
+    {
+        return left.key < right.key;
+    }
+
+    indexStatus findIndex(const string& key)
+    {
+        std::sort(Map, Map + mapSize, compareKey);
+        std::size_t left = 0;
+        std::size_t right = mapSize - 1;
+        std::size_t mid;
+
+        while (right >= left)
+        {
+            mid = left + (right - left) / 2;
+
+            if (Map[mid].key == key)
+            {
+                return {mid, true};
+            }
+            else if (Map[mid].key < key)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        return {mapSize, false};
+    }
+
 public:
     // стандартный конструктор
     FlatMap()
@@ -22,122 +74,56 @@ public:
         capacity = other_map.capacity;
         mapSize = other_map.mapSize;
         Map = new element[capacity];
-        for (std::size_t i = 0; i < mapSize; ++i)
-        {
-            Map[i].key = new string(*(other_map.Map[i].key));
-            Map[i].value = new string(*(other_map.Map[i].value));
-        }
-
+        std::copy(other_map.Map, other_map.Map + mapSize, Map);
     }
 
     // деструктор
     ~FlatMap()
     {
-        for (std::size_t i = 0; i < mapSize; ++i)
-        {
-            delete Map[i].key;
-            delete Map[i].value;
-        }
         delete[] Map;
     }
 
     // перегрузка оператора присваивания
     FlatMap& operator=(const FlatMap &other_map)
     {
-        for (std::size_t i = 0; i < mapSize; ++i)
+        if(this != &other_map)
         {
-            delete Map[i].key;
-            delete Map[i].value;
-        }
-        delete[] Map;
+            delete[] Map;
+            capacity = other_map.capacity;
+            mapSize = other_map.mapSize;
+            Map = new element[capacity];
 
-        capacity = other_map.capacity;
-        mapSize = other_map.mapSize;
-        Map = new element[capacity];
-        for (std::size_t i = 0; i < mapSize; ++i)
-        {
-            Map[i].key = new string(*(other_map.Map[i].key));
-            Map[i].value = new string(*(other_map.Map[i].value));
+            std::copy(other_map.Map, other_map.Map + mapSize, Map);
         }
-
         return *this;
-    }
-
-    // получить количество элементов в таблице
-    std::size_t size() const
-    {
-        return mapSize;
     }
 
     // доступ / вставка элемента по ключу
     string& operator[](const string &key)
     {
-        if (mapSize != capacity)
+
+        indexStatus status = findIndex(key);
+
+        if (status.contains == false)
         {
-            for (std::size_t i = 0; i < mapSize; ++i)
-            {
-                if (*Map[i].key == key)
-                {
-                    return (*Map[i].value);
-                }
-            }
+            Map[status.index].key = key;
         }
 
-        if (mapSize == capacity)
+        else
         {
-            capacity *= 2;
-            element* newMap = new element[capacity];
-            for (std::size_t i = 0; i < mapSize; ++i)
-            {
-                newMap[i].key = new string(*(Map[i].key));
-                newMap[i].value = new string(*(Map[i].value));
-            }
-            Map = newMap;
-            delete[] newMap;
+            return (Map[status.index].value);
         }
-        Map[mapSize].key = new string(key);
-        Map[mapSize].value = new string("");
-        return *(Map[mapSize].value);
     }
 
-    // возвращает true, если запись с таким ключом присутствует в таблице
-    bool contains(const string &key)
-    {
-        std::size_t left = 0;
-        std::size_t right = mapSize - 1;
-
-        while (left <= right)
-        {
-            std::size_t mid = left + (right - left) / 2;
-
-            if (*(Map[mid].key) == key)
-            {
-                return true;
-            }
-            else if (*(Map[mid].key) < key)
-            {
-                left = mid + 1;
-            }
-            else
-            {
-                right = mid - 1;
-            }
-        }
-
-        return false;   
-    }
 
     // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
     std::size_t erase(const string &key)
     {
         for (std::size_t i = 0; i < mapSize; ++i)
         {
-            if (*(Map[i].key) == key)
+            if (Map[i].key == key)
             {
-                delete Map[i].key;
-                delete Map[i].value;
-                Map[i].key = nullptr;
-                Map[i].value = nullptr;
+                std::copy(Map + i + 1, Map + mapSize, Map + i);
                 mapSize--;
                 return 1;
             }
@@ -148,26 +134,9 @@ public:
     // очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
     void clear()
     {
-        for(std::size_t i = 0; i < mapSize; ++i)
-        {
-            delete Map[i].key;
-            delete Map[i].value;
-            Map[i].key = nullptr;
-            Map[i].value = nullptr;
-            mapSize = 0;
-        }
+        mapSize = 0;
     }
 
-private:
-    struct element
-    {
-        string* key;
-        string* value;
-    };
-
-    element* Map;
-    std::size_t capacity;
-    std::size_t mapSize;
 };
 
 // int main()
@@ -178,14 +147,13 @@ private:
 //     string val;
 //     FlatMap b;
 //     FlatMap c = a;
-//     val = a[*key];
-//     val = b[*ke1];
-//     a[*key] = "alskgn";
-//     b = a;
-//     bool v = a.contains(*key);
-//     std::size_t y = a.erase(*key);
-//     a.clear();
-//     int j = a.size();
-//     bool asd = a.contains(*key);
+//     // val = a[*key];
+//     // val = b[*ke1];
+//     // a[*key] = "alskgn";
+//     // b = a;
+//     // bool v = a.contains(*key);
+//     // std::size_t y = a.erase(*key);
+//     // a.clear();
+//     // bool asd = a.contains(*key);
 //     return 0;
 // }
