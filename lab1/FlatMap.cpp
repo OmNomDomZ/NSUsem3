@@ -1,17 +1,11 @@
 #include "FlatMap.h"
 
-FlatMap::FlatMap()
-{
-    capacity = 10;
-    mapSize = 0;
-    Map = new element[capacity];
-}
+using std::string;
 
-FlatMap::FlatMap(const FlatMap& otherMap)
+FlatMap::FlatMap() : capacity(startCapacity), mapSize(0), Map(new element[capacity]) {}
+
+FlatMap::FlatMap(const FlatMap &otherMap) : capacity(otherMap.capacity), mapSize(otherMap.capacity), Map(new element[capacity])
 {
-    capacity = 10;
-    mapSize = 0;
-    Map = new element[capacity];
     std::copy(otherMap.Map, otherMap.Map + mapSize, Map);
 }
 
@@ -20,25 +14,25 @@ FlatMap::~FlatMap()
     delete[] Map;
 }
 
-FlatMap& FlatMap::operator=(const FlatMap &otherMap)
+FlatMap &FlatMap::operator=(const FlatMap &otherMap)
 {
-    if(this != &otherMap)
-        {
-            delete[] Map;
-            capacity = otherMap.capacity;
-            mapSize = otherMap.mapSize;
-            Map = new element[capacity];
+    if (this != &otherMap)
+    {
+        delete[] Map;
+        capacity = otherMap.capacity;
+        mapSize = otherMap.mapSize;
+        Map = new element[capacity];
 
-            std::copy(otherMap.Map, otherMap.Map + mapSize, Map);
-        }
-        return *this;
+        std::copy(otherMap.Map, otherMap.Map + mapSize, Map);
+    }
+    return *this;
 }
 
-string& FlatMap::operator[](const string& key)
+string &FlatMap::operator[](const string &key)
 {
     indexStatus status = findIndex(key);
 
-    if (status.contains == true)
+    if (status.contains)
     {
         return (Map[status.index].value);
     }
@@ -54,13 +48,14 @@ string& FlatMap::operator[](const string& key)
             Map = newMap;
         }
 
-        Map[mapSize].key = key;
+        std::copy(Map + status.index, Map + mapSize, Map + status.index + 1);
+        Map[status.index].key = key;
         mapSize++;
-        return (Map[mapSize - 1].value);
+        return (Map[status.index].value);
     }
 }
 
-size_t FlatMap::erase(const string& key)
+size_t FlatMap::erase(const string &key)
 {
     indexStatus status = findIndex(key);
 
@@ -80,4 +75,40 @@ void FlatMap::clear()
     capacity = 10;
     mapSize = 0;
     Map = new element[capacity];
+}
+
+FlatMap::indexStatus FlatMap::findIndex(const string &key)
+{
+    if (mapSize == 0)
+    {
+        return {0, false};
+    }
+
+    std::size_t left = 0;
+    std::size_t right = mapSize - 1;
+    std::size_t mid;
+
+    while (right >= left)
+    {
+        mid = (left + right) / 2;
+
+        if (Map[mid].key == key)
+        {
+            return {mid, true};
+        }
+        else if (Map[mid].key < key)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            if (mid == 0)
+            {
+                break;
+            }
+            right = mid - 1;
+        }
+    }
+
+    return {left, false};
 }

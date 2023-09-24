@@ -1,16 +1,19 @@
+#ifndef FLATMAP
+#define FLATMAP
+
 #include <string>
 #include <algorithm>
-
-using std::string;
 
 class FlatMap
 {
 
 private:
+    const std::size_t startCapacity = 2;
+
     struct element
     {
-        string key;
-        string value;
+        std::string key;
+        std::string value;
     };
 
     element* Map;
@@ -23,38 +26,7 @@ private:
         bool contains;
     };
 
-    bool compareKey(const element& left, const element& right)
-    {
-        return left.key < right.key;
-    }
-
-    indexStatus findIndex(const string& key)
-    {
-        std::sort(Map, Map + mapSize, compareKey);
-        std::size_t left = 0;
-        std::size_t right = mapSize - 1;
-        std::size_t mid;
-
-        while (right >= left)
-        {
-            mid = left + (right - left) / 2;
-
-            if (Map[mid].key == key)
-            {
-                return {mid, true};
-            }
-            else if (Map[mid].key < key)
-            {
-                left = mid + 1;
-            }
-            else
-            {
-                right = mid - 1;
-            }
-        }
-
-        return {mapSize, false};
-    }
+    indexStatus findIndex(const std::string& key);
 
 public:
     // стандартный конструктор
@@ -70,13 +42,15 @@ public:
     FlatMap& operator=(const FlatMap &otherMap);
 
     // доступ / вставка элемента по ключу
-    string& operator[](const string &key);
+    std::string& operator[](const std::string &key);
 
 
     // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
-    std::size_t erase(const string &key);
+    std::size_t erase(const std::string &key);
 
     // очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
     void clear();
 
 };
+
+#endif
