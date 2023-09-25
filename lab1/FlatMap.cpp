@@ -55,6 +55,17 @@ string &FlatMap::operator[](const string &key)
     }
 }
 
+std::size_t FlatMap::size() const
+{
+    return(mapSize);
+}
+
+bool FlatMap::contains(const std::string& key)
+{
+    indexStatus status = findIndex(key);
+    return (status.contains);
+}
+
 size_t FlatMap::erase(const string &key)
 {
     indexStatus status = findIndex(key);

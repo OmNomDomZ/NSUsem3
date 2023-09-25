@@ -44,6 +44,11 @@ public:
     // доступ / вставка элемента по ключу
     std::string& operator[](const std::string &key);
 
+    // получить количество элементов в таблице
+    std::size_t size() const;
+
+    // возвращает true, если запись с таким ключом присутствует в таблице
+    bool contains(const std::string& key);
 
     // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
     std::size_t erase(const std::string &key);
