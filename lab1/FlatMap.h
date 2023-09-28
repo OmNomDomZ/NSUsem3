@@ -33,16 +33,16 @@ public:
     FlatMap();
 
     // конструктор копирования
-    FlatMap(const FlatMap &othermMap);
+    FlatMap(const FlatMap& othermMap);
 
     // деструктор
     ~FlatMap();
 
     // перегрузка оператора присваивания
-    FlatMap& operator=(const FlatMap &otherMap);
+    FlatMap& operator=(const FlatMap& otherMap);
 
     // доступ / вставка элемента по ключу
-    std::string& operator[](const std::string &key);
+    std::string& operator[](const std::string& key);
 
     // получить количество элементов в таблице
     std::size_t size() const;
@@ -51,11 +51,16 @@ public:
     bool contains(const std::string& key);
 
     // удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
-    std::size_t erase(const std::string &key);
+    std::size_t erase(const std::string& key);
 
     // очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
     void clear();
 
+    // конструктор перемещения
+    FlatMap(FlatMap&& otherMap) noexcept;
+
+    // перемещающий оператор =
+    FlatMap& operator=(FlatMap&& otherMap) noexcept;
 };
 
 #endif

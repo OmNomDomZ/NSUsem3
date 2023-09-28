@@ -2,18 +2,24 @@
 
 using std::string;
 
-FlatMap::FlatMap() : capacity(startCapacity), mapSize(0), Map(new element[capacity]) {}
+// стандартный конструктор
+FlatMap::FlatMap() : capacity(startCapacity), mapSize(0), Map(new element[capacity])
+{
+}
 
+// конструктор копирования
 FlatMap::FlatMap(const FlatMap &otherMap) : capacity(otherMap.capacity), mapSize(otherMap.capacity), Map(new element[capacity])
 {
     std::copy(otherMap.Map, otherMap.Map + mapSize, Map);
 }
 
+// деструктор
 FlatMap::~FlatMap()
 {
     delete[] Map;
 }
 
+// перегрузка оператора присваивания
 FlatMap &FlatMap::operator=(const FlatMap &otherMap)
 {
     if (this != &otherMap)
@@ -28,6 +34,7 @@ FlatMap &FlatMap::operator=(const FlatMap &otherMap)
     return *this;
 }
 
+// доступ / вставка элемента по ключу
 string &FlatMap::operator[](const string &key)
 {
     indexStatus status = findIndex(key);
@@ -44,8 +51,7 @@ string &FlatMap::operator[](const string &key)
             capacity = 2 * capacity;
             element *newMap = new element[capacity];
             std::copy(Map, Map + mapSize, newMap);
-            delete[] Map;
-            Map = newMap;
+            Map = std::move(newMap);
         }
 
         std::copy(Map + status.index, Map + mapSize, Map + status.index + 1);
@@ -55,22 +61,25 @@ string &FlatMap::operator[](const string &key)
     }
 }
 
+// получить количество элементов в таблиц
 std::size_t FlatMap::size() const
 {
-    return(mapSize);
+    return (mapSize);
 }
 
-bool FlatMap::contains(const std::string& key)
+// возвращает true, если запись с таким ключом присутствует в таблице
+bool FlatMap::contains(const std::string &key)
 {
     indexStatus status = findIndex(key);
     return (status.contains);
 }
 
-size_t FlatMap::erase(const string &key)
+// удаление элемента по ключу, возвращает количество удаленных элементов (0 или 1)
+std::size_t FlatMap::erase(const string &key)
 {
     indexStatus status = findIndex(key);
 
-    if (Map[status.index].key == key)
+    if (status.contains)
     {
         std::copy(Map + status.index + 1, Map + mapSize, Map + status.index);
         mapSize--;
@@ -80,12 +89,41 @@ size_t FlatMap::erase(const string &key)
     return 0;
 }
 
+// очистка таблицы, после которой size() возвращает 0, а contains() - false на любой ключ
 void FlatMap::clear()
 {
     delete[] Map;
-    capacity = 10;
+    capacity = startCapacity;
     mapSize = 0;
     Map = new element[capacity];
+}
+
+// конструктор перемещения
+FlatMap::FlatMap(FlatMap &&otherMap) noexcept : Map(std::move(otherMap.Map)), capacity(otherMap.capacity), mapSize(otherMap.mapSize)
+{
+    otherMap.Map = nullptr;
+    otherMap.capacity = startCapacity;
+    otherMap.mapSize = 0;
+}
+
+// перемещающий оператор =
+FlatMap &FlatMap::operator=(FlatMap &&otherMap) noexcept
+{
+    if (this == &otherMap)
+    {
+        return *this;
+    }
+
+    delete[] Map;
+    capacity = otherMap.capacity;
+    mapSize = otherMap.mapSize;
+    Map = std::move(otherMap.Map);
+
+    otherMap.Map = nullptr;
+    otherMap.capacity = startCapacity;
+    otherMap.mapSize = 0;
+
+    return *this;
 }
 
 FlatMap::indexStatus FlatMap::findIndex(const string &key)

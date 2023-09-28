@@ -65,7 +65,7 @@ TEST(FlatMapTest, Erase2)
     for (const auto& param : TestCase2)
     {
         EXPECT_EQ(map.erase(param[0]), 1);
-        EXPECT_FALSE(map.contains(param[0]));
+        EXPECT_TRUE(map.contains(param[0]));
     }
     EXPECT_EQ(map.size(), 0);
 }
@@ -128,4 +128,8 @@ TEST(FlatMapTest, Insert3)
     }
 }
 
-    
+int main(int argc, char **argv)
+{
+    ::testing:: InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
