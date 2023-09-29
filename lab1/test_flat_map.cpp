@@ -1,9 +1,15 @@
-#include "FlatMap.h"
+#include "flat_map.h"
 #include "gtest/gtest.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
+
+int main(int argc, char **argv)
+{
+    ::testing:: InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
 
 std::vector<std::vector<std::string>> TestCase1
 {
@@ -126,10 +132,4 @@ TEST(FlatMapTest, Insert3)
     {
         EXPECT_EQ(map[param[0]], param[1]);
     }
-}
-
-int main(int argc, char **argv)
-{
-    ::testing:: InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }
