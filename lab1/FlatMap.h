@@ -16,9 +16,9 @@ private:
         std::string value;
     };
 
-    element* Map;
     std::size_t capacity;
     std::size_t mapSize;
+    element* Map;
 
     struct indexStatus
     {

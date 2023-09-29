@@ -3,12 +3,14 @@
 using std::string;
 
 // стандартный конструктор
-FlatMap::FlatMap() : capacity(startCapacity), mapSize(0), Map(new element[capacity])
+FlatMap::FlatMap() :
+capacity(startCapacity), mapSize(0), Map(new element[capacity])
 {
 }
 
 // конструктор копирования
-FlatMap::FlatMap(const FlatMap &otherMap) : capacity(otherMap.capacity), mapSize(otherMap.capacity), Map(new element[capacity])
+FlatMap::FlatMap(const FlatMap &otherMap) :
+capacity(otherMap.capacity), mapSize(otherMap.capacity), Map(new element[capacity])
 {
     std::copy(otherMap.Map, otherMap.Map + mapSize, Map);
 }
@@ -99,7 +101,8 @@ void FlatMap::clear()
 }
 
 // конструктор перемещения
-FlatMap::FlatMap(FlatMap &&otherMap) noexcept : Map(std::move(otherMap.Map)), capacity(otherMap.capacity), mapSize(otherMap.mapSize)
+FlatMap::FlatMap(FlatMap &&otherMap) noexcept :
+capacity(otherMap.capacity), mapSize(otherMap.mapSize), Map(std::move(otherMap.Map))
 {
     otherMap.Map = nullptr;
     otherMap.capacity = startCapacity;
