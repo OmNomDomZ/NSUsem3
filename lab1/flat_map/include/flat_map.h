@@ -18,7 +18,7 @@ private:
 
     std::size_t capacity;
     std::size_t mapSize;
-    element* Map;
+    element* map;
 
     struct indexStatus
     {

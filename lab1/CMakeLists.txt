@@ -25,6 +25,6 @@ set(TEST_NAME "test_${DIR_NAME}")
 
 add_executable(${TEST_NAME} ${TEST_NAME}.cpp)
 target_link_libraries(${TEST_NAME} flat_map gtest gtest_main)
-# add_test(NAME ${TEST_NAME}
-        # COMMAND ${TEST_NAME}
-        # WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+ add_test(NAME ${TEST_NAME}
+         COMMAND ${TEST_NAME}
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
