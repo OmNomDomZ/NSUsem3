@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     ::testing:: InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
@@ -19,6 +19,7 @@ std::vector<std::vector<std::string>> TestCase1
     {"key4", "value4"},
     {"key5", "value5"}
 };
+
 
 std::vector<std::vector<std::string>> TestCase2
 {
@@ -36,6 +37,20 @@ std::vector<std::vector<std::string>> TestCase3
     {"key2", "value2"},
     {"key4", "value4"},
     {"key3", "value3"}
+};
+
+std::vector<std::vector<std::string>> TestCase4
+{
+    {"key6", "value6"},
+    {"key7", "value7"},
+    {"key5", "value5"},
+    {"key2", "value2"},
+    {"key10", "value10"},
+    {"key9", "value9"},
+    {"key1", "value1"},
+    {"key8", "value8"},
+    {"key3", "value3"},
+    {"key4", "value4"}
 };
 
 TEST(FlatMapTest, EmptyMap)
@@ -92,6 +107,22 @@ TEST(FlatMapTest, Erase3)
     EXPECT_EQ(map.size(), 0);
 }
 
+TEST(FlatMapTest, Erase4)
+{
+    FlatMap map;
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+
+    for (const auto& param : TestCase4)
+    {
+        EXPECT_EQ(map.erase(param[0]), 1);
+        EXPECT_FALSE(map.contains(param[0])) << param[0];
+    }
+    EXPECT_EQ(map.size(), 0);
+}
+
 TEST(FlatMapTest, Insert1)
 {
     FlatMap map;
@@ -131,5 +162,55 @@ TEST(FlatMapTest, Insert3)
     for (const auto& param : TestCase3)
     {
         EXPECT_EQ(map[param[0]], param[1]) << param[0];
+    }
+}
+
+TEST(FlatMapTest, Insert4)
+{
+    FlatMap map;
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+
+    for (const auto& param : TestCase4)
+    {
+        EXPECT_EQ(map[param[0]], param[1]) << param[0];
+    }
+}
+
+TEST(FlatMapTest, Clear)
+{
+    FlatMap map;
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+    EXPECT_EQ(map.size(), TestCase4.size());
+    map.clear();
+    for (const auto& param : TestCase4)
+    {
+        EXPECT_FALSE(map.contains(param[0])) << param[0];
+    }
+    EXPECT_EQ(map.size(), 0);
+}
+
+ TEST(FlatMapTest, CopyConstructor)
+{
+    FlatMap map1;
+    FlatMap map2 = map1;
+
+    for (const auto& param : TestCase4)
+    {
+        map1[param[0]] = param[1];
+    }
+    for (const auto& param : TestCase4)
+    {
+        EXPECT_NE(map1[param[0]], map2[param[0]]);
+    }
+    map2 = map1;
+    for (const auto& param : TestCase4)
+    {
+        EXPECT_EQ(map1[param[0]], map2[param[0]]);
     }
 }
