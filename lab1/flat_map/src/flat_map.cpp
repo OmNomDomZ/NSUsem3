@@ -1,4 +1,5 @@
 #include "flat_map.h"
+#include "iostream"
 
 using std::string;
 
@@ -46,10 +47,15 @@ string& FlatMap::operator[](const string& key) {
             map = newMap;
         }
 
-        std::copy(map + status.index, map + mapSize, map + status.index + 1);
+        for (std::size_t i = mapSize; status.index < i; --i)
+        {
+            map[i] = std::move(map[i-1]);
+        }
+
         map[status.index].key = key;
         mapSize++;
         return (map[status.index].value);
+
     }
 }
 
@@ -125,7 +131,7 @@ FlatMap::indexStatus FlatMap::findIndex(const string& key) {
 
         if (map[mid].key == key) {
             return {mid, true};
-        } else if (map[mid].key < key) {
+        }else if (map[mid].key < key) {
             left = mid + 1;
         } else {
             if (mid == 0) {
