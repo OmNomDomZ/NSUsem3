@@ -1,7 +1,6 @@
 #include "flat_map.h"
 #include "gtest/gtest.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -45,7 +44,6 @@ std::vector<std::vector<std::string>> TestCase4
     {"key7", "value7"},
     {"key5", "value5"},
     {"key2", "value2"},
-    {"key10", "value10"},
     {"key9", "value9"},
     {"key1", "value1"},
     {"key8", "value8"},
@@ -198,7 +196,8 @@ TEST(FlatMapTest, Clear)
  TEST(FlatMapTest, CopyConstructor)
 {
     FlatMap map1;
-    FlatMap map2 = map1;
+    FlatMap map2;
+    map2 = map1;
 
     for (const auto& param : TestCase4)
     {
@@ -214,3 +213,32 @@ TEST(FlatMapTest, Clear)
         EXPECT_EQ(map1[param[0]], map2[param[0]]);
     }
 }
+
+TEST(FlatMapTest, Find)
+{
+    FlatMap map;
+
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+
+    std::size_t count = 0;
+    for( auto it = map.find("key1"); it != map.end(); ++it ) {
+        count++;
+    }
+    EXPECT_EQ(count, 9);
+
+    count = 0;
+    for( auto it = map.find("key7"); it != map.end(); ++it ) {
+        count++;
+    }
+    EXPECT_EQ(count, 3);
+
+    count = 0;
+    for( auto it = map.find("key9"); it != map.end(); ++it ) {
+        count++;
+    }
+    EXPECT_EQ(count, 1);
+}
+

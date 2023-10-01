@@ -1,5 +1,4 @@
 #include "flat_map.h"
-#include "iostream"
 
 using std::string;
 
@@ -9,7 +8,7 @@ FlatMap::FlatMap() : capacity(startCapacity), mapSize(0), map(new element[capaci
 }
 
 // конструктор копирования
-FlatMap::FlatMap(const FlatMap& otherMap) : capacity(otherMap.capacity), mapSize(otherMap.capacity), map(new element[capacity])
+FlatMap::FlatMap(const FlatMap& otherMap) : capacity(otherMap.capacity), mapSize(otherMap.mapSize), map(new element[capacity])
 {
     std::copy(otherMap.map, otherMap.map + mapSize, map);
 }
@@ -25,13 +24,10 @@ FlatMap& FlatMap::operator=(const FlatMap& otherMap)
 {
     if (this != &otherMap)
     {
-        delete[] map;
-        capacity = otherMap.capacity;
-        mapSize = otherMap.mapSize;
-        map = new element[capacity];
-
-        std::copy(otherMap.map, otherMap.map + mapSize, map);
+        FlatMap temp(otherMap);
+        swap(temp);
     }
+
     return *this;
 }
 
@@ -49,7 +45,7 @@ string& FlatMap::operator[](const string& key)
         if (capacity == mapSize)
         {
             capacity = 2 * capacity;
-            element *newMap = new element[capacity];
+            element* newMap = new element[capacity];
             std::copy(map, map + mapSize, newMap);
             delete[] map;
             map = newMap;
@@ -120,13 +116,12 @@ FlatMap& FlatMap::operator=(FlatMap&& otherMap) noexcept
     }
 
     delete[] map;
-    capacity = otherMap.capacity;
-    mapSize = otherMap.mapSize;
-    map = otherMap.map;
 
-    otherMap.map = nullptr;
+    swap(otherMap);
+
     otherMap.capacity = startCapacity;
     otherMap.mapSize = 0;
+    otherMap.map = nullptr;
 
     return *this;
 }
@@ -165,4 +160,11 @@ FlatMap::indexStatus FlatMap::findIndex(const string& key)
     }
 
     return {left, false};
+}
+
+void FlatMap::swap(FlatMap& otherMap) noexcept
+{
+    std::swap(map, otherMap.map);
+    std::swap(mapSize, otherMap.mapSize);
+    std::swap(capacity, otherMap.capacity);
 }
