@@ -82,10 +82,22 @@ public:
             return current != other.current;
           }
 
-          std::pair<std::string, std::string> operator*() const
+          element operator*() const
           {
-            return {current->key, current->value};
+            return *current;
           }
+
+          [[nodiscard]] std::string getKey() const
+          {
+            return current->key;
+          }
+
+          [[nodiscard]] std::string  getValue() const
+          {
+            return current->value;
+          }
+
+
     };
 
     // получить итератор на первый элемент

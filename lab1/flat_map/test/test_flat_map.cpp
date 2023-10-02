@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 
 int main(int argc, char **argv)
 {
@@ -124,12 +123,12 @@ TEST(FlatMapTest, UpdateElement)
 {
     FlatMap map;
     map[TestCase5[0][0]] = TestCase5[0][1];
-    EXPECT_EQ(map["key"], "first_value");
-    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(map["key"], "first_value") << map["key"];
+    EXPECT_EQ(map.size(), 1) << map.size();
 
     map[TestCase5[1][0]] = TestCase5[1][1];
-    EXPECT_EQ(map["key"], "second_value");
-    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(map["key"], "second_value") << map["key"];
+    EXPECT_EQ(map.size(), 1) << map.size();
 }
 
 
@@ -262,4 +261,53 @@ TEST(FlatMapTest, Find)
     }
     EXPECT_EQ(count, 1);
 }
+
+TEST(FlatMapTest, Iterator)
+{
+    FlatMap map;
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+
+    EXPECT_EQ(map.begin().getKey(), "key1") << map.begin().getKey();
+
+    auto it = map.end();
+    map["key_end"] = "value_end";
+    EXPECT_EQ(it.getKey(), "key_end") << it.getKey();
+}
+
+TEST(FlatMapTest, MoveConstructor)
+{
+    FlatMap map1;
+    map1["key1"] = "value1";
+    map1["key2"] = "value2";
+
+    FlatMap map2(std::move(map1));
+
+    EXPECT_EQ(map1.size(), 0) << map1.size();
+    EXPECT_EQ(map2.size(), 2) << map2.size();
+    EXPECT_EQ(map2["key1"], "value1") << map2["key1"];
+    EXPECT_EQ(map2["key2"], "value2") << map2["key2"];
+}
+
+TEST(FlatMapTest, MoveAssignmentOperator)
+{
+    FlatMap map1;
+    map1["key1"] = "value1";
+    map1["key2"] = "value2";
+
+    FlatMap map2;
+    map2["key3"] = "value3";
+    map2["key4"] = "value4";
+    map2["key5"] = "value5";
+
+    map2 = std::move(map1);
+
+    EXPECT_EQ(map1.size(), 0) << map1.size();
+    EXPECT_EQ(map2.size(), 2) << map2.size();
+    EXPECT_EQ(map2["key1"], "value1") << map2["key1"];
+    EXPECT_EQ(map2["key2"], "value2") << map2["key2"];
+}
+
 
