@@ -1,5 +1,7 @@
 #include "flat_map.h"
 
+#include <memory>
+
 using std::string;
 
 // стандартный конструктор
@@ -24,8 +26,12 @@ FlatMap& FlatMap::operator=(const FlatMap& otherMap)
 {
     if (this != &otherMap)
     {
-        FlatMap temp(otherMap);
-        swap(temp);
+      std::unique_ptr<element[]> tmp = std::make_unique<element[]>(otherMap.capacity);
+      std::copy_n(otherMap.map, otherMap.mapSize, tmp.get());
+      delete[] map;
+      mapSize = otherMap.mapSize;
+      capacity = otherMap.capacity;
+      map = tmp.release();
     }
 
     return *this;
@@ -45,7 +51,7 @@ string& FlatMap::operator[](const string& key)
         if (capacity == mapSize)
         {
             capacity = 2 * capacity;
-            element* newMap = new element[capacity];
+            auto newMap = new element[capacity];
             std::copy(map, map + mapSize, newMap);
             delete[] map;
             map = newMap;
@@ -63,7 +69,7 @@ string& FlatMap::operator[](const string& key)
 }
 
 // получить количество элементов в таблиц
-std::size_t FlatMap::size() const
+[[nodiscard]] std::size_t FlatMap::size() const
 {
     return (mapSize);
 }
@@ -110,18 +116,21 @@ FlatMap::FlatMap(FlatMap&& otherMap) noexcept : capacity(otherMap.capacity), map
 // перемещающий оператор =
 FlatMap& FlatMap::operator=(FlatMap&& otherMap) noexcept
 {
-    if (this == &otherMap)
+    if (this != &otherMap)
     {
-        return *this;
+      std::unique_ptr<element[]> tmp = std::make_unique<element[]>(otherMap.capacity);
+      std::copy_n(otherMap.map, otherMap.mapSize, tmp.get());
+
+      delete[] map;
+
+      capacity = otherMap.capacity;
+      mapSize = otherMap.mapSize;
+      map = tmp.release();
+
+      otherMap.capacity = startCapacity;
+      otherMap.mapSize = 0;
+      otherMap.map = nullptr;
     }
-
-    delete[] map;
-
-    swap(otherMap);
-
-    otherMap.capacity = startCapacity;
-    otherMap.mapSize = 0;
-    otherMap.map = nullptr;
 
     return *this;
 }
@@ -160,11 +169,4 @@ FlatMap::indexStatus FlatMap::findIndex(const string& key)
     }
 
     return {left, false};
-}
-
-void FlatMap::swap(FlatMap& otherMap) noexcept
-{
-    std::swap(map, otherMap.map);
-    std::swap(mapSize, otherMap.mapSize);
-    std::swap(capacity, otherMap.capacity);
 }

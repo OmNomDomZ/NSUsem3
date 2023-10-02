@@ -28,8 +28,6 @@ private:
 
     indexStatus findIndex(const std::string& key);
 
-    void swap(FlatMap& other) noexcept;
-
 public:
     // стандартный конструктор
     FlatMap();
@@ -47,7 +45,7 @@ public:
     std::string& operator[](const std::string& key);
 
     // получить количество элементов в таблице
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
 
     // возвращает true, если запись с таким ключом присутствует в таблице
     bool contains(const std::string& key);
@@ -64,13 +62,14 @@ public:
     // перемещающий оператор =
     FlatMap& operator=(FlatMap&& otherMap) noexcept;
 
+
     class iterator
     {
         private:
           element* current;
 
         public:
-          iterator(element* cur) : current(cur) {};
+          explicit iterator(element* cur) : current(cur) {};
 
           iterator& operator++()
           {
@@ -89,16 +88,19 @@ public:
           }
     };
 
+    // получить итератор на первый элемент
     iterator begin()
     {
           return iterator(map);
     }
 
+    // получить итератор на элемент, следующий за последним
     iterator end()
     {
           return iterator(map + mapSize);
     }
 
+    // получить итератор на элемент по данному ключу, или на end(), если такого ключа нет
     iterator find(const std::string& key)
     {
           indexStatus status = findIndex(key);
