@@ -1,5 +1,5 @@
-#ifndef WAV_LOADER
-#define WAV_LOADER
+#ifndef WAV
+#define WAV
 
 #include <string>
 #include <fstream>
@@ -46,6 +46,10 @@ private:
   WAVHeader InputHeader;
   std::string InputFileName;
   std::ifstream InputFile;
+  std::streamoff dataStart;
+  int8_t* Data;
+
+  int8_t ReadByte();
 
 public:
   WAVLoader() = default;
@@ -54,8 +58,25 @@ public:
 
   void GetHeader();
 
+  void GetData();
+
   ~WAVLoader() = default;
 };
+
+class WAVWriter
+{
+private:
+  WAVHeader OutputHeader;
+  std::ofstream outputFile;
+
+public:
+  WAVWriter() = default;
+
+
+
+  ~WAVWriter() = default;
+};
+
 
 
 #endif
