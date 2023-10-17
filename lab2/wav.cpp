@@ -1,21 +1,26 @@
 #include "wav.h"
 
-WAVLoader::WAVLoader(std::string& FileName)
+void WAVLoader::WAVOpen(std::string& FileName)
 {
   if (FileName.find(".wav") == std::string::npos)
   {
-    //
+    // Логика в случае, если файл не имеет расширения .wav
   }
   InputFileName = FileName;
+  if (InputFile.is_open())
+  {
+    InputFile.close();
+  }
+
   InputFile.open(InputFileName, std::ios::binary);
   if (!InputFile.is_open())
   {
-    //
+    // Логика, если файл не удается открыть
   }
 
   GetHeader();
-
 }
+
 
 void WAVLoader::GetHeader()
 {
@@ -92,4 +97,37 @@ int8_t WAVLoader::ReadByte()
   char c;
   InputFile.get(c);
   return (static_cast<int8_t>(c));
+}
+
+
+WAVWriter::WAVWriter(std::string& FileName) {
+  if (FileName.find(".wav") == std::string::npos)
+  {
+    //
+  }
+  OutputFileName = FileName;
+  if (OutputFile.is_open())
+  {
+    OutputFile.close();
+  }
+
+  OutputFile.open(OutputFileName, std::ios::binary);
+  if (!OutputFile.is_open())
+  {
+    //
+  }
+
+}
+
+
+
+void WAVWriter::WriteData(int8_t *Data)
+{
+  WAVHeader finalHeader{FINAL_HEADER};
+//  finalHeader.subchunk2Size = ;
+  finalHeader.chunkSize = CHUNK_SIZE_WITHOUT_DATA + finalHeader.subchunk2Size;
+
+  OutputFile.seekp(std::ios::beg);
+  OutputFile.write(reinterpret_cast<char *> (&finalHeader), sizeof(finalHeader));
+  dataStart = sizeof(finalHeader);
 }
