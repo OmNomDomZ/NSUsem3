@@ -4,7 +4,7 @@ void WAVLoader::WAVOpen(std::string& FileName)
 {
   if (FileName.find(".wav") == std::string::npos)
   {
-    // Логика в случае, если файл не имеет расширения .wav
+
   }
   InputFileName = FileName;
   if (InputFile.is_open())
@@ -15,7 +15,7 @@ void WAVLoader::WAVOpen(std::string& FileName)
   InputFile.open(InputFileName, std::ios::binary);
   if (!InputFile.is_open())
   {
-    // Логика, если файл не удается открыть
+
   }
 
   GetHeader();
@@ -77,33 +77,22 @@ void WAVLoader::GetHeader()
   }
 }
 
-void WAVLoader::GetData()
+void WAVLoader::GetData(std::vector<int8_t>& Data)
 {
   dataStart = sizeof(InputHeader);
-
-  Data = new int8_t[InputHeader.subchunk2Size];
-
   InputFile.seekg(dataStart, std::ios::beg);
-
-  for (std::size_t i = 0; i < InputHeader.subchunk2Size; ++i)
+  InputFile.read(reinterpret_cast<char*>(Data.data()), InputHeader.subchunk2Size);
+  if(InputFile.fail())
   {
-    Data[i] = ReadByte();
+
   }
 
 }
 
-int8_t WAVLoader::ReadByte()
-{
-  char c;
-  InputFile.get(c);
-  return (static_cast<int8_t>(c));
-}
-
-
-WAVWriter::WAVWriter(std::string& FileName) {
+void WAVWriter::WAVOpen(std::string& FileName) {
   if (FileName.find(".wav") == std::string::npos)
   {
-    //
+
   }
   OutputFileName = FileName;
   if (OutputFile.is_open())
@@ -114,20 +103,31 @@ WAVWriter::WAVWriter(std::string& FileName) {
   OutputFile.open(OutputFileName, std::ios::binary);
   if (!OutputFile.is_open())
   {
-    //
+
   }
 
 }
 
-
-
-void WAVWriter::WriteData(int8_t *Data)
-{
+void WAVWriter::WriteHeader() {
   WAVHeader finalHeader{FINAL_HEADER};
-//  finalHeader.subchunk2Size = ;
+  finalHeader.subchunk2Size = ;
   finalHeader.chunkSize = CHUNK_SIZE_WITHOUT_DATA + finalHeader.subchunk2Size;
 
   OutputFile.seekp(std::ios::beg);
   OutputFile.write(reinterpret_cast<char *> (&finalHeader), sizeof(finalHeader));
   dataStart = sizeof(finalHeader);
+  OutputFile.flush();
 }
+
+void WAVWriter::WriteData(std::vector<int8_t>& Data)
+{
+  OutputFile.seekp(dataStart);
+  OutputFile.write(reinterpret_cast<char*> (Data.data()), );
+  OutputFile.flush();
+  if (OutputFile.fail())
+  {
+
+  }
+
+}
+

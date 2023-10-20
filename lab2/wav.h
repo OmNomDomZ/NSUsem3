@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdint>
+#include <vector>
 
   const int32_t RIFF = 0x52494646;
   const int32_t WAVE = 0x57415645;
@@ -55,9 +56,6 @@ private:
   std::string InputFileName;
   std::ifstream InputFile;
   std::streamoff dataStart;
-  int8_t* Data;
-
-  int8_t ReadByte();
 
 public:
   WAVLoader() = default;
@@ -68,7 +66,7 @@ public:
 
   void GetHeader();
 
-  void GetData();
+  void GetData(std::vector<int8_t>& Data);
 };
 
 class WAVWriter {
@@ -83,11 +81,11 @@ public:
 
   ~WAVWriter() = default;
 
-  WAVWriter(std::string &FileName);
+  void WAVOpen(std::string &FileName);
 
   void WriteHeader();
 
-  void WriteData(int8_t *Data);
-}
+  void WriteData(std::vector<int8_t>& Data);
+};
 
 #endif
