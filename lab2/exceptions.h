@@ -11,12 +11,6 @@ protected:
   Exception(const std::string& error);
 };
 
-class InvalidFileFormatException : public Exception
-{
-public:
-  InvalidFileFormatException();
-};
-
 class FileOpenException : public Exception
 {
 public:
@@ -26,7 +20,7 @@ public:
 class RIFFException : public Exception
 {
 public:
-  RIFFException()
+  RIFFException();
 };
 
 class FormatException : public Exception
@@ -65,22 +59,10 @@ public:
   SampleRateException();
 };
 
-class ByteRateException : public Exception
+class FileFailure : public Exception
 {
 public:
-  ByteRateException();
-};
-
-class BlockAlignException : public Exception
-{
-public:
-  BlockAlignException();
-};
-
-class BitsPerSampleException : public Exception
-{
-public:
-  BitsPerSampleException();
+  FileFailure();
 };
 
 
