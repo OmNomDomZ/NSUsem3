@@ -19,7 +19,7 @@ public:
 
   ~WAVLoader() = default;
 
-  void WAVOpen(std::string& FileName);
+  void WAVOpen(const std::string& FileName);
 
   void GetHeader();
 
@@ -40,11 +40,11 @@ public:
 
   ~WAVWriter() = default;
 
-  void WAVOpen(std::string &FileName);
+  void WAVOpen(const std::string &FileName);
 
   void WriteHeader(const std::size_t Duration);
 
-  void WriteData(std::vector<int16_t>& Data, const std::size_t Duration);
+  void WriteData(std::vector<int16_t>& Data, const std::size_t second);
 };
 
 #endif

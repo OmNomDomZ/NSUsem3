@@ -49,7 +49,7 @@ const DATAChunk FINAL_DATA{
     DATA, 0
 };
 
-void WAVLoader::WAVOpen(std::string& FileName)
+void WAVLoader::WAVOpen(const std::string& FileName)
 {
 
   InputFileName = FileName;
@@ -133,7 +133,7 @@ std::size_t WAVLoader::GetDuration() const
   return DataSize / BYTE_RATE;
 }
 
-void WAVWriter::WAVOpen(std::string& FileName) {
+void WAVWriter::WAVOpen(const std::string& FileName) {
 
   OutputFileName = FileName;
   if (OutputFile.is_open())
