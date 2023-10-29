@@ -1,6 +1,6 @@
 #include "converters.h"
 
-void Converter::setParams(const std::vector<size_t> &Params)
+void Converter::setParams(const std::vector<int16_t> &Params)
 {
   stream = (Params[0] == SIZE_MAX) ? 0 : Params[0];
   start = (Params[1] == SIZE_MAX) ? 0 : Params[1];
@@ -9,15 +9,15 @@ void Converter::setParams(const std::vector<size_t> &Params)
   convFinished = false;
 }
 
-Converter::Converter(const std::vector<size_t> &Params){
+Converter::Converter(const std::vector<int16_t> &Params){
   Converter::setParams(Params);
 }
 
 
-MuteConverter::MuteConverter(const std::vector<size_t> &Params)
+MuteConverter::MuteConverter(const std::vector<int16_t> &Params)
     : Converter(Params){}
 
-void MuteConverter::convert(std::vector<size_t>& Data1, const std::vector<size_t>& Data2) {
+void MuteConverter::convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) {
   if (start < finish)
   {
     std::fill(Data1.begin(), Data1.end(), 0);
@@ -26,10 +26,10 @@ void MuteConverter::convert(std::vector<size_t>& Data1, const std::vector<size_t
 }
 
 
-MixConverter::MixConverter(const std::vector<size_t> &Params)
+MixConverter::MixConverter(const std::vector<int16_t> &Params)
     : Converter(Params){}
 
-void MixConverter::convert(std::vector<size_t>& Data1, const std::vector<size_t>& Data2) {
+void MixConverter::convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) {
   if (curTime < finish)
   {
     for (size_t i = 0; Data1.size(); ++i)

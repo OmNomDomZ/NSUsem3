@@ -17,7 +17,7 @@ const int32_t BYTE_RATE = SAMPLE_RATE * NUM_CHANNELS * BITS_PER_SAMPLE / BITS_PE
 const int32_t BLOCK_ALIGN = NUM_CHANNELS * BITS_PER_SAMPLE / BITS_PER_BYTE;
 
 
-struct RIFFandFMT
+struct __attribute__((packed)) RIFFandFMT
 {
   int32_t chunkID;
   int32_t chunkSize;
@@ -33,7 +33,7 @@ struct RIFFandFMT
   int16_t bitsPerSample;
 };
 
-struct DATAChunk
+struct __attribute__((packed)) DATAChunk
 {
     int32_t subchunk2ID;
     int32_t subchunk2Size;

@@ -6,8 +6,7 @@
 #include <cstdint>
 #include <vector>
 
-class WAVLoader
-{
+class WAVLoader {
 private:
   std::string InputFileName;
   std::ifstream InputFile;
@@ -19,14 +18,13 @@ public:
 
   ~WAVLoader() = default;
 
-  void WAVOpen(const std::string& FileName);
+  void WAVOpen(const std::string &FileName);
 
   void GetHeader();
 
-  void GetData(std::vector<int16_t>& Data);
+  void GetData(std::vector<int16_t> &Data);
 
   std::size_t GetDuration() const;
-
 };
 
 class WAVWriter {
@@ -44,7 +42,7 @@ public:
 
   void WriteHeader(const std::size_t Duration);
 
-  void WriteData(std::vector<int16_t>& Data, const std::size_t second);
+  void WriteData(std::vector<int16_t> &Data, const std::size_t second);
 };
 
 #endif

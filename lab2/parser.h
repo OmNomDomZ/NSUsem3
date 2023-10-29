@@ -1,23 +1,22 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <vector>
+#include <fstream>
 
 class Parser
 {
 private:
-  struct Command{
-    std::string converter;
-    std::vector<std::size_t> params;
-  };
+  std::ifstream inputFile;
+  std::string inputWAV;
+  std::string outputWAV;
 
-  std::string FileName;
-  std::ifstream File;
 
 public:
+  Parser(const std::string& fileName);
+
+
+  void ParseCommand();
 
 
 };

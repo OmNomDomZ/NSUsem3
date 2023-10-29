@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 #include <algorithm>
 
 class Converter
@@ -10,13 +11,13 @@ class Converter
 public:
   Converter() = default;
 
-  Converter(const std::vector<size_t>& Params);
+  Converter(const std::vector<int16_t>& Params);
 
   virtual ~Converter() = default;
 
-  void setParams(const std::vector<size_t>& Params);
+  void setParams(const std::vector<int16_t>& Params);
 
-  virtual void convert(std::vector<size_t>& Data1, const std::vector<size_t>& Data2);
+  virtual void convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) = 0;
 
 protected:
   std::size_t stream;
@@ -31,11 +32,11 @@ class MuteConverter : public Converter
 public:
   MuteConverter() = default;
 
-  MuteConverter(const std::vector<size_t>& Params);
+  MuteConverter(const std::vector<int16_t>& Params);
 
   ~MuteConverter() override = default;
 
-  void convert(std::vector<size_t>& Data1, const std::vector<size_t> &Data2) override;
+  void convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) override;
 };
 
 class MixConverter : public Converter
@@ -43,11 +44,11 @@ class MixConverter : public Converter
 public:
   MixConverter() = default;
 
-  MixConverter(const std::vector<size_t>& Params);
+  MixConverter(const std::vector<int16_t>& Params);
 
   ~MixConverter() override = default;
 
-  void convert(std::vector<size_t>& Data1, const std::vector<size_t>& Data2) override;
+  void convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) override;
 };
 
 
