@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <iterator>
 
 Parser::Parser(const std::string &fileName)
 {
@@ -19,15 +18,13 @@ void Parser::ParseCommand()
   loadWAV.WAVOpen(inputWAV);
 
   std::vector <int16_t> inData;
-  std::vector <int16_t> subSample;
+  std::vector <int16_t> subData;
   loadWAV.GetData(inData);
   size_t WAVDuration = loadWAV.GetDuration();
 
   WAVWriter outWAV;
   outWAV.WAVOpen(outputWAV);
   outWAV.WriteHeader(WAVDuration);
-
-  std::vector<int16_t> outData;
 
 
   std::string line;
@@ -47,26 +44,37 @@ void Parser::ParseCommand()
       {
         continue;
       }
-      MuteConverter muteConverter({start, finish});
-      muteConverter.convert(outData, subSample);
+      std::vector<int16_t> params = {static_cast<int16_t>(start), static_cast<int16_t>(finish)};
+      MuteConverter muteConverter(params);
+      muteConverter.convert(inData, subData);
     }
     else if (command == "mix")
     {
-      std::string param;
+      std::string sample;
       std::size_t start, finish;
-      if (!(iss >> param >> start >> finish))
+      if (!(iss >> sample >> start >> finish))
       {
         continue;
       }
-      std::string sample = param.substr(1);
-      std::size_t secondSample = std::stoul(sample);
-      MixConverter mixConverter({secondSample, start, finish});
+      std::string subSampleFile = sample.substr(1);
+      WAVLoader subWAV;
+      subWAV.WAVOpen(subSampleFile);
+      subWAV.GetData(subData);
 
+      std::size_t subSample = std::stoul(subSampleFile);
+      std::vector<int16_t> params = {static_cast<int16_t>(subSample), static_cast<int16_t>(start), static_cast<int16_t>(finish)};
+      MixConverter mixConverter(params);
+      mixConverter.convert(inData, subData);
     }
+
 
     else
     {}
 
+    for (std::size_t i = 0; i < WAVDuration; ++i)
+    {
+      outWAV.WriteData(inData, i);
+    }
   }
 
 }
