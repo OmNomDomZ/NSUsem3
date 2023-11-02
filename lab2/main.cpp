@@ -1,15 +1,18 @@
-#include <fstream>
-#include <iostream>
+#include "commander.h"
 
-int main()
+int main(int argc, char *argv[])
 {
- std::ifstream inputFile;
- std::ofstream outputFile;
+  if (argc < 4)
+  {
 
- inputFile.open("input.wav");
- outputFile.open("output.wav");
+  }
 
+  std::string inputWAV(argv[1]);
+  std::string outputWAV(argv[2]);
+  std::string inputParser(argv[3]);
 
+  Commander commander(inputWAV, outputWAV, inputParser);
+  commander.executeCommands();
 
   return 0;
 }

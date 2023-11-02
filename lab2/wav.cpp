@@ -17,12 +17,15 @@ const int32_t BYTE_RATE = SAMPLE_RATE * NUM_CHANNELS * BITS_PER_SAMPLE / BITS_PE
 const int32_t BLOCK_ALIGN = NUM_CHANNELS * BITS_PER_SAMPLE / BITS_PER_BYTE;
 
 
-struct __attribute__((packed)) RIFFandFMT
+struct __attribute__((packed)) RIFF_t
 {
   int32_t chunkID;
   int32_t chunkSize;
   int32_t format;
+};
 
+struct __attribute__((packed)) FMT_t
+{
   int32_t subchunk1ID;
   int32_t subchunk1Size;
   int16_t audioFormat;
@@ -33,19 +36,25 @@ struct __attribute__((packed)) RIFFandFMT
   int16_t bitsPerSample;
 };
 
-struct __attribute__((packed)) DATAChunk
+struct __attribute__((packed)) DATAChunk_t
 {
     int32_t subchunk2ID;
     int32_t subchunk2Size;
 };
 
 
-const RIFFandFMT FINAL_RIFFandFMT{
-    RIFF, 0, WAVE,
-    FMT, SUBCHUNK1_SIZE, AUDIO_FORMAT, NUM_CHANNELS, SAMPLE_RATE, BYTE_RATE, BLOCK_ALIGN, BITS_PER_SAMPLE
-};
+const RIFF_t FINAL_RIFF
+    {
+    RIFF, 0, WAVE
+    };
 
-const DATAChunk FINAL_DATA{
+const FMT_t FINAL_FMT
+    {
+        FMT, SUBCHUNK1_SIZE, AUDIO_FORMAT, NUM_CHANNELS, SAMPLE_RATE, BYTE_RATE, BLOCK_ALIGN, BITS_PER_SAMPLE
+    };
+
+
+const DATAChunk_t FINAL_DATA{
     DATA, 0
 };
 
@@ -70,36 +79,39 @@ void WAVLoader::WAVOpen(const std::string& FileName)
 
 void WAVLoader::GetHeader()
 {
-  RIFFandFMT InputHeader{};
-  InputFile.read(reinterpret_cast<char *> (&InputHeader), sizeof(InputHeader));
-  DataStart = sizeof(InputHeader);
+  RIFF_t InputRIFF{};
+  FMT_t InputFMT{};
+  InputFile.read(reinterpret_cast<char *> (&InputRIFF), sizeof(InputRIFF));
+  InputFile.read(reinterpret_cast<char *> (&InputFMT), sizeof(InputFMT));
 
-  if (InputHeader.chunkID != RIFF)
+  DataStart = sizeof(InputRIFF) + sizeof(InputFMT);
+
+  if (InputRIFF.chunkID != RIFF)
   {
     throw RIFFException();
   }
 
-  if (InputHeader.format != WAVE)
+  if (InputRIFF.format != WAVE)
   {
     throw FormatException();
   }
 
-  if (InputHeader.subchunk1ID != FMT)
+  if (InputFMT.subchunk1ID != FMT)
   {
     throw FMTException();
   }
 
-  if (InputHeader.audioFormat != AUDIO_FORMAT)
+  if (InputFMT.audioFormat != AUDIO_FORMAT)
   {
     throw AudioFormatException();
   }
 
-  if (InputHeader.numChannels != NUM_CHANNELS)
+  if (InputFMT.numChannels != NUM_CHANNELS)
   {
     throw NumChannelsException();
   }
 
-  if (InputHeader.sampleRate != SAMPLE_RATE)
+  if (InputFMT.sampleRate != SAMPLE_RATE)
   {
     throw SampleRateException();
   }
@@ -107,7 +119,7 @@ void WAVLoader::GetHeader()
 
 void WAVLoader::GetData(std::vector<int16_t>& Data)
 {
-  DATAChunk DataChunk{};
+  DATAChunk_t DataChunk{};
   InputFile.read(reinterpret_cast<char *>(&DataChunk), sizeof(DataChunk));
 
   if (DataChunk.subchunk2ID != DATA)
@@ -151,17 +163,19 @@ void WAVWriter::WAVOpen(const std::string& FileName) {
 
 void WAVWriter::WriteHeader(const std::size_t Duration)
 {
-  RIFFandFMT finalRIFFandFMT{FINAL_RIFFandFMT};
-  DATAChunk finalDataChunk{FINAL_DATA};
+  RIFF_t finalRIFF{FINAL_RIFF};
+  FMT_t finalFMT{FINAL_FMT};
+  DATAChunk_t finalDataChunk{FINAL_DATA};
 
   finalDataChunk.subchunk2Size = Duration * sizeof(int16_t) * SAMPLE_RATE;
-  finalRIFFandFMT.chunkSize = CHUNK_SIZE_WITHOUT_DATA + finalDataChunk.subchunk2Size;
+  finalRIFF.chunkSize = CHUNK_SIZE_WITHOUT_DATA + finalDataChunk.subchunk2Size;
 
   OutputFile.seekp(std::ios::beg);
-  OutputFile.write(reinterpret_cast<char *> (&finalRIFFandFMT), sizeof(finalRIFFandFMT));
+  OutputFile.write(reinterpret_cast<char *> (&finalRIFF), sizeof(finalRIFF));
+  OutputFile.write(reinterpret_cast<char *> (&finalFMT), sizeof (finalFMT));
   OutputFile.write(reinterpret_cast<char *> (&finalDataChunk), sizeof(finalDataChunk));
 
-  dataStart = sizeof(finalRIFFandFMT) + sizeof(finalDataChunk);
+  dataStart = sizeof(finalRIFF) + sizeof(finalFMT) + sizeof(finalDataChunk);
 
   OutputFile.flush();
   if (OutputFile.fail())

@@ -6,13 +6,17 @@
 
 class Parser
 {
-private:
-  std::ifstream inputFile;
-  std::string inputWAV;
-  std::string outputWAV;
+//private:
+//  std::ifstream inputFile;
+//  std::string inputWAV;
+//  std::string outputWAV;
 
 
 public:
+  std::ifstream inputFile;
+    std::string inputWAV;
+    std::string outputWAV;
+
   Parser(const std::string& fileName);
 
 
