@@ -1,6 +1,20 @@
-cmake_minimum_required(VERSION 3.5.1)
-project(sound_processor CXX)
+cmake_minimum_required(VERSION 3.22)
+get_filename_component(PROGRAM_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+message(STATUS "PROGRAM_NAME: ${PROGRAM_NAME}")
 
-set(SRC main.cpp wav.cpp exceptions.cpp parser.cpp commander.cpp converters/converters.cpp)
+project(${PROGRAM_NAME} CXX)
 
-add_executable(${PROJECT_NAME} ${SRC})
+set(CMAKE_CXX_STANDARD 20)
+
+file(GLOB SOURCE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+message(STATUS ${SOURCE_DIRS})
+
+message(STATUS "project name: ${PROJECT_NAME}")
+add_executable(${PROGRAM_NAME} ${SOURCE_DIRS})
+target_compile_options(${PROGRAM_NAME} PRIVATE -pedantic -Wall -Werror)
+target_include_directories(${PROGRAM_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/wav)
+#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/converters")
+
+#target_link_libraries(${PROGRAM_NAME} PUBLIC wav)

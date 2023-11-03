@@ -1,10 +1,10 @@
-#include "wav.h"
-#include "exceptions.h"
+#include "../include/wav.h"
+#include "../include/exceptions.h"
 
-const int32_t RIFF = 0x52494646;
-const int32_t WAVE = 0x57415645;
-const int32_t FMT = 0x666d7420;
-const int32_t DATA = 0x64617461;
+const int32_t RIFF = 0x46464952;
+const int32_t WAVE = 0x45564157;
+const int32_t FMT = 0x20746d66;
+const int32_t DATA = 0x61746164;
 
 const int32_t CHUNK_SIZE_WITHOUT_DATA = 36;
 const int16_t AUDIO_FORMAT = 0x0001;
@@ -62,6 +62,7 @@ void WAVLoader::WAVOpen(const std::string& FileName)
 {
 
   InputFileName = FileName;
+  DataStart = 0;
   if (InputFile.is_open())
   {
     InputFile.close();
@@ -74,6 +75,7 @@ void WAVLoader::WAVOpen(const std::string& FileName)
   }
 
   GetHeader();
+  FindData();
 }
 
 
@@ -84,7 +86,8 @@ void WAVLoader::GetHeader()
   InputFile.read(reinterpret_cast<char *> (&InputRIFF), sizeof(InputRIFF));
   InputFile.read(reinterpret_cast<char *> (&InputFMT), sizeof(InputFMT));
 
-  DataStart = sizeof(InputRIFF) + sizeof(InputFMT);
+  DataStart += sizeof(InputRIFF);
+  DataStart += sizeof(InputFMT);
 
   if (InputRIFF.chunkID != RIFF)
   {
@@ -117,32 +120,44 @@ void WAVLoader::GetHeader()
   }
 }
 
-void WAVLoader::GetData(std::vector<int16_t>& Data)
-{
+void WAVLoader::FindData(){
   DATAChunk_t DataChunk{};
-  InputFile.read(reinterpret_cast<char *>(&DataChunk), sizeof(DataChunk));
-
-  if (DataChunk.subchunk2ID != DATA)
+  while (!InputFile.eof())
   {
-    throw DATAException();
+    InputFile.read(reinterpret_cast<char *>(&DataChunk), sizeof(DataChunk));
+    if (InputFile.fail())
+    {
+
+    }
+    DataStart += sizeof(DataChunk);
+    if (DataChunk.subchunk2ID == DATA)
+    {
+      DataSize_ = DataChunk.subchunk2Size;
+      return;
+    }
+
+    InputFile.seekg(DataChunk.subchunk2Size, std::fstream::cur);
+    if (InputFile.fail())
+    {
+
+    }
+    DataStart += DataChunk.subchunk2Size;
   }
+}
 
-  DataStart += sizeof(DataChunk);
-
-  InputFile.seekg(DataStart, std::ios::beg);
-  InputFile.read(reinterpret_cast<char*>(Data.data()), DataChunk.subchunk2Size);
+void WAVLoader::GetData(std::vector<int16_t>& Data, const std::size_t second)
+{
+  InputFile.seekg(DataStart + second * Data.size() * sizeof(*Data.data()), std::ios::beg);
+  InputFile.read(reinterpret_cast<char*>(Data.data()), Data.size() * sizeof(*Data.data()));
   if(InputFile.fail())
   {
     throw FileFailure();
   }
-
-  DataSize = DataChunk.subchunk2Size;
-
 }
 
 std::size_t WAVLoader::GetDuration() const
 {
-  return DataSize / BYTE_RATE;
+  return DataSize_ / BYTE_RATE;
 }
 
 void WAVWriter::WAVOpen(const std::string& FileName) {

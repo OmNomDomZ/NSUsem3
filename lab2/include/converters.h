@@ -1,5 +1,4 @@
-#ifndef CONVERTERS
-#define CONVERTERS
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -50,7 +49,3 @@ public:
 
   void convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) override;
 };
-
-
-
-#endif

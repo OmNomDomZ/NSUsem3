@@ -1,6 +1,6 @@
 #include "parser.h"
 
-#include "converters/converters.h"
+#include "converters.h"
 #include "wav.h"
 
 #include <string>
@@ -19,13 +19,17 @@ void Parser::ParseCommand()
 
   std::vector <int16_t> inData;
   std::vector <int16_t> subData;
-  loadWAV.GetData(inData);
   size_t WAVDuration = loadWAV.GetDuration();
 
   WAVWriter outWAV;
   outWAV.WAVOpen(outputWAV);
   outWAV.WriteHeader(WAVDuration);
 
+
+  for (std::size_t i = 0; i < WAVDuration; ++i)
+  {
+    loadWAV.GetData(inData, i);
+  }
 
   std::string line;
   while (std::getline(inputFile, line))
@@ -59,7 +63,7 @@ void Parser::ParseCommand()
       std::string subSampleFile = sample.substr(1);
       WAVLoader subWAV;
       subWAV.WAVOpen(subSampleFile);
-      subWAV.GetData(subData);
+//      subWAV.GetData(subData);
 
       std::size_t subSample = std::stoul(subSampleFile);
       std::vector<int16_t> params = {static_cast<int16_t>(subSample), static_cast<int16_t>(start), static_cast<int16_t>(finish)};

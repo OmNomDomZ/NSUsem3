@@ -11,7 +11,7 @@ private:
   std::string InputFileName;
   std::ifstream InputFile;
   std::streamoff DataStart;
-  std::size_t DataSize;
+  std::size_t DataSize_;
 
 public:
   WAVLoader() = default;
@@ -22,9 +22,10 @@ public:
 
   void GetHeader();
 
-  void GetData(std::vector<int16_t> &Data);
+  void GetData(std::vector<int16_t> &Data, const std::size_t Duration);
 
   std::size_t GetDuration() const;
+  void FindData();
 };
 
 class WAVWriter {
