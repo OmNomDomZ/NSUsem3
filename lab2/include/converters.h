@@ -18,12 +18,17 @@ public:
 
   virtual void convert(std::vector<int16_t>& Data1, const std::vector<int16_t>& Data2) = 0;
 
+  bool ConvFinished() const;
+
+  std::size_t GetStream();
+
 protected:
   std::size_t stream;
   std::size_t start;
   std::size_t curTime;
   std::size_t finish;
   bool convFinished;
+//  std::size_t InStream;
 };
 
 class MuteConverter : public Converter
