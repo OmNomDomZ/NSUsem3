@@ -13,75 +13,106 @@ const std::size_t SAMPLE_RATE = 44100;
 Parser::Parser(const std::string &fileName) { inputFile.open(fileName); }
 
 void Parser::ParseCommand() {
-  WAVLoader loadWAV;
+  WAVWriter outWAVWriter;
+  outWAVWriter.WAVOpen(outputWAV);
+  outWAVWriter.WriteHeader(0);
 
-  std::vector<int16_t> inData;
+
+  WAVLoader loadWAVMain;
+  loadWAVMain.WAVOpen(inputWAV);
+  WAVLoader loadWAVSub;
+
+  std::vector<int16_t> mainData{};
   std::vector<int16_t> subData;
-  //  inData.resize(WAVDuration * SAMPLE_RATE);
+  mainData.resize(SAMPLE_RATE);
+  subData.resize(SAMPLE_RATE);
 
-  WAVWriter outWAVwriter;
-  outWAVwriter.WAVOpen(outputWAV);
-  outWAVwriter.WriteHeader(0);
-  WAVLoader outWAVloader;
-  outWAVloader.WAVOpen(outputWAV);
-  //  loadWAV.GetData(inData, 0);
+//  WAVWriter outWAVwriter;
+//  outWAVwriter.WAVOpen(outputWAV);
+//  outWAVwriter.WriteHeader(0);
+//
+//  WAVLoader outWAVloader;
+//  outWAVloader.WAVOpen(outputWAV);
+//  //  loadWAV.GetData(inData, 0);
 
   std::string line;
-  size_t outDuration;
+  std::size_t outDuration = 0;
+  std::unique_ptr<Converter> converter;
   while (std::getline(inputFile, line)) {
     std::istringstream iss(line);
     std::string command;
-    if (!(iss >> command)) {
+    if (!(iss >> command))
+    {
       break;
     }
-    std::string sample;
-    std::size_t start, finish;
-    if (!(iss >> sample >> start >> finish)) {
-      continue;
-    }
 
-    std::string subSampleFile = sample.substr(1);
-    WAVLoader subWAV;
-    subWAV.WAVOpen(subSampleFile);
-    //      subWAV.GetData(subData);
+    if (command == "mute")
+    {
+      std::size_t start, finish;
+      if (!(iss >> start >> finish)) {
+        continue;
+      }
+      std::vector<int16_t> params = {0, static_cast<int16_t>(start), static_cast<int16_t>(finish)};
 
-    std::size_t subStream = std::stoul(subSampleFile);
-    std::vector<int16_t> params = {static_cast<int16_t>(subStream), static_cast<int16_t>(start),
-                                   static_cast<int16_t>(finish)};
-    std::unique_ptr<Converter> converter;
-
-    if (subStream) {
-      loadWAV.WAVOpen(inputWAV);
-    }
-
-    if (command == "mute") {
       converter = std::make_unique<MuteConverter>(params);
-    } else if (command == "mix") {
+    }
+
+    else if(command == "mix")
+    {
+      std::string sample;
+      std::size_t start, finish;
+      if (!(iss >> sample >> start >> finish)) {
+        continue;
+      }
+
+      std::string subSampleFile = sample.substr(1);
+
+      loadWAVSub.WAVOpen(subSampleFile);
+//      subWAV.GetData(subData);
+
+      std::size_t subStream = std::stoul(subSampleFile);
+      std::vector<int16_t> params = {static_cast<int16_t>(subStream), static_cast<int16_t>(start),
+                                     static_cast<int16_t>(finish)};
+
       converter = std::make_unique<MixConverter>(params);
-    } else {
+    }
+
+    else
+    {
       throw std::exception();
     }
 
-    const size_t inDuration = loadWAV.GetDuration();
 
-    while (!converter->ConvFinished() && converter->readSecond() < inDuration) {
-      const size_t readSecond = converter->readSecond();
+//    if (subStream) {
+//      loadWAV.WAVOpen(inputWAV);
+//    }
+//
 
-      if (converter->readSecond() < outDuration){
-        outWAVloader.GetData(inData, readSecond);
+    const size_t inDuration = loadWAVMain.GetDuration();
+
+    while (!converter->ConvFinished() && converter->ReadSecond() < inDuration) {
+      const std::size_t readSecond = converter->ReadSecond();
+      const std::size_t writeSecond = converter->WriteSecond();
+
+      if (writeSecond < outDuration)
+      {
+        loadWAVMain.GetData(mainData, writeSecond);
       }
-      else{
-        std::fill(inData.begin(), inData.end(), 0);
+      else
+      {
+        std::fill(mainData.begin(), mainData.end(), 0);
       }
 
-      if (converter->GetStream()){
-        subWAV.GetData(subData, readSecond);
+      if (converter->GetStream())
+      {
+        loadWAVSub.GetData(subData, readSecond);
       }
 
-      converter->convert(inData, subData);
-      outWAVwriter.WriteData(inData, readSecond);
-      outDuration = std::max(converter->readSecond(), outDuration);
+      converter->convert(mainData, subData);
+      outWAVWriter.WriteData(mainData, writeSecond);
+
+      outDuration = std::max(converter->WriteSecond(), outDuration);
     }
   }
-  outWAVwriter.WriteHeader(outDuration);
+  outWAVWriter.WriteHeader(outDuration);
 }

@@ -76,6 +76,7 @@ void WAVLoader::WAVOpen(const std::string& FileName)
 
   GetHeader();
   FindData();
+
 }
 
 
@@ -148,7 +149,7 @@ void WAVLoader::FindData(){
 void WAVLoader::GetData(std::vector<int16_t>& Data, const std::size_t second)
 {
   InputFile.seekg(DataStart + second * Data.size() * sizeof(*Data.data()), std::ios::beg);
-  InputFile.read(reinterpret_cast<char*>(Data.data()), Data.size() * sizeof(*Data.data()));
+  InputFile.read(reinterpret_cast<char*>(Data.data()), sizeof(*Data.data()));
   if(InputFile.fail())
   {
     throw FileFailure();

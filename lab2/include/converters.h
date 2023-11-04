@@ -22,6 +22,10 @@ public:
 
   std::size_t GetStream();
 
+  std::size_t ReadSecond();
+
+  std::size_t WriteSecond();
+
 protected:
   std::size_t stream;
   std::size_t start;
