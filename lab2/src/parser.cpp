@@ -6,26 +6,30 @@
 
 #include <memory>
 #include <sstream>
+#include <algorithm>
 #include <string>
 #include <vector>
 
 const std::size_t SAMPLE_RATE = 44100;
 
-Parser::Parser(const std::string &fileName) { inputFile.open(fileName); }
+Parser::Parser(const std::string& WAVPath, const std::string& outputWAV, const std::string& fileName)
+{
+  instructionFileName_ = fileName;
+  WAVPath_ = WAVPath;
+  outputWAV_ = outputWAV;
+}
 
 void Parser::ParseCommand() {
   WAVWriter outWAVWriter;
-  outWAVWriter.WAVOpen(outputWAV);
+  outWAVWriter.WAVOpen(outputWAV_);
 
   folder_reader FolderReader(WAVPath_);
   std::vector<std::string> fileNames = FolderReader.getFileNames();
 
-//  std::string OutputPath = WAVPath_ + "output.wav";
-//  outWAVWriter.WAVOpen(OutputPath);
   outWAVWriter.WriteHeader(0);
 
   WAVLoader loadWAVMain;
-  loadWAVMain.WAVOpen(outputWAV);
+  loadWAVMain.WAVOpen(outputWAV_);
   WAVLoader loadWAVSub;
 
   std::vector<int16_t> mainData{};
@@ -38,7 +42,16 @@ void Parser::ParseCommand() {
   std::size_t outDuration = 0;
   std::unique_ptr<Converter> converter;
 
-  while (std::getline(inputFile, line)) {
+  std::ifstream instructionFile;
+  instructionFile.open(instructionFileName_);
+
+  while (std::getline(instructionFile, line))
+  {
+    if(!line.empty() && line[0] == '#')
+    {
+      continue;
+    }
+
     std::istringstream iss(line);
     std::string command;
     if (!(iss >> command))
