@@ -31,6 +31,8 @@ public:
 
   std::unique_ptr<Converter> makeConverter(const std::string& command, const std::vector<int16_t >& params);
 
+  void ZeroingTime();
+
 
 protected:
   std::size_t _stream;

@@ -33,7 +33,7 @@ void Parser::ParseCommand() {
   WAVLoader loadWAVSub;
 
   std::vector<int16_t> mainData{};
-  std::vector<int16_t> subData;
+  std::vector<int16_t> subData{};
   mainData.resize(SAMPLE_RATE);
   subData.resize(SAMPLE_RATE);
 
@@ -80,8 +80,15 @@ void Parser::ParseCommand() {
     const size_t inDuration = loadWAVSub.GetDuration();
 
     while (!converter->ConvFinished() && converter->ReadSecond() < inDuration) {
-      const std::size_t readSecond = converter->ReadSecond();
-      const std::size_t writeSecond = converter->WriteSecond();
+       std::size_t readSecond = converter->ReadSecond();
+       std::size_t writeSecond = converter->WriteSecond();
+
+      if (outDuration == 0)
+      {
+        converter->ZeroingTime();
+        readSecond = 0;
+        writeSecond = 0;
+      }
 
       if (writeSecond < outDuration)
       {

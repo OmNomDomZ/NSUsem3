@@ -38,6 +38,11 @@ std::unique_ptr<Converter> Converter::makeConverter(const std::string &command, 
   }
 }
 
+void Converter::ZeroingTime()
+{
+  curTime = 0;
+}
+
 MuteConverter::MuteConverter(const std::vector<int16_t> &Params)
     : Converter(Params) {}
 
