@@ -80,15 +80,13 @@ void Parser::ParseCommand() {
     const size_t inDuration = loadWAVSub.GetDuration();
 
     while (!converter->ConvFinished() && converter->ReadSecond() < inDuration) {
-       std::size_t readSecond = converter->ReadSecond();
-       std::size_t writeSecond = converter->WriteSecond();
-
       if (outDuration == 0)
       {
         converter->ZeroingTime();
-        readSecond = 0;
-        writeSecond = 0;
       }
+
+      const std::size_t readSecond = converter->ReadSecond();
+      const std::size_t writeSecond = converter->WriteSecond();
 
       if (writeSecond < outDuration)
       {
