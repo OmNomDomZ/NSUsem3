@@ -29,3 +29,6 @@ SampleRateException::SampleRateException()
 
 FileFailure::FileFailure()
     : Exception("File failure"){}
+
+InvalidCommand::InvalidCommand()
+    : Exception("Invalid Command"){}

@@ -1,9 +1,9 @@
 #include "commander.h"
 
-Commander::Commander(const std::string &inputWAV, const std::string &outputWAV, const std::string &inputParser)
+Commander::Commander(const std::string &WAVPath, const std::string &outputWAV, const std::string &inputParser)
   : parser(inputParser)
 {
-  parser.inputWAV = inputWAV;
+  parser.WAVPath_ = WAVPath;
   parser.outputWAV = outputWAV;
 }
 

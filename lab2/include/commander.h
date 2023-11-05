@@ -14,7 +14,7 @@ private:
   Parser parser;
 
 public:
-  Commander(const std::string& inputWAV, const std::string& outputWAV, const std::string& inputParser);
+  Commander(const std::string& WAVPath, const std::string& outputWAV, const std::string& inputParser);
 
   void executeCommands();
 };

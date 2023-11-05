@@ -7,7 +7,7 @@
 class Exception : public std::invalid_argument
 {
 protected:
-  Exception(const std::string& error);
+  explicit Exception(const std::string& error);
 };
 
 class FileOpenException : public Exception
@@ -62,4 +62,10 @@ class FileFailure : public Exception
 {
 public:
   FileFailure();
+};
+
+class InvalidCommand : public Exception
+{
+public:
+  InvalidCommand();
 };

@@ -1,9 +1,12 @@
 #pragma once
 
+#include "exceptions.h"
+
 #include <iostream>
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <memory>
 
 class Converter
 {
@@ -26,13 +29,15 @@ public:
 
   std::size_t WriteSecond();
 
+  std::unique_ptr<Converter> makeConverter(const std::string& command, const std::vector<int16_t >& params);
+
+
 protected:
-  std::size_t stream;
+  std::size_t _stream;
   std::size_t start;
   std::size_t curTime;
   std::size_t finish;
   bool convFinished;
-//  std::size_t InStream;
 };
 
 class MuteConverter : public Converter

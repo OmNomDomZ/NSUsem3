@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include "converters.h"
+#include "folder_reader.h"
 #include "wav.h"
 
 #include <memory>
@@ -15,11 +16,16 @@ Parser::Parser(const std::string &fileName) { inputFile.open(fileName); }
 void Parser::ParseCommand() {
   WAVWriter outWAVWriter;
   outWAVWriter.WAVOpen(outputWAV);
+
+  folder_reader FolderReader(WAVPath_);
+  std::vector<std::string> fileNames = FolderReader.getFileNames();
+
+//  std::string OutputPath = WAVPath_ + "output.wav";
+//  outWAVWriter.WAVOpen(OutputPath);
   outWAVWriter.WriteHeader(0);
 
-
   WAVLoader loadWAVMain;
-  loadWAVMain.WAVOpen(inputWAV);
+  loadWAVMain.WAVOpen(outputWAV);
   WAVLoader loadWAVSub;
 
   std::vector<int16_t> mainData{};
@@ -27,17 +33,11 @@ void Parser::ParseCommand() {
   mainData.resize(SAMPLE_RATE);
   subData.resize(SAMPLE_RATE);
 
-//  WAVWriter outWAVwriter;
-//  outWAVwriter.WAVOpen(outputWAV);
-//  outWAVwriter.WriteHeader(0);
-//
-//  WAVLoader outWAVloader;
-//  outWAVloader.WAVOpen(outputWAV);
-//  //  loadWAV.GetData(inData, 0);
 
   std::string line;
   std::size_t outDuration = 0;
   std::unique_ptr<Converter> converter;
+
   while (std::getline(inputFile, line)) {
     std::istringstream iss(line);
     std::string command;
@@ -46,49 +46,25 @@ void Parser::ParseCommand() {
       break;
     }
 
-    if (command == "mute")
-    {
-      std::size_t start, finish;
-      if (!(iss >> start >> finish)) {
-        continue;
-      }
-      std::vector<int16_t> params = {0, static_cast<int16_t>(start), static_cast<int16_t>(finish)};
-
-      converter = std::make_unique<MuteConverter>(params);
+    std::string sample;
+    std::size_t start, finish;
+    if (!(iss >> sample >> start >> finish)) {
+      continue;
     }
 
-    else if(command == "mix")
-    {
-      std::string sample;
-      std::size_t start, finish;
-      if (!(iss >> sample >> start >> finish)) {
-        continue;
-      }
-
-      std::string subSampleFile = sample.substr(1);
-
-      loadWAVSub.WAVOpen(subSampleFile);
-//      subWAV.GetData(subData);
-
-      std::size_t subStream = std::stoul(subSampleFile);
-      std::vector<int16_t> params = {static_cast<int16_t>(subStream), static_cast<int16_t>(start),
-                                     static_cast<int16_t>(finish)};
-
-      converter = std::make_unique<MixConverter>(params);
-    }
-
-    else
-    {
-      throw std::exception();
-    }
+    std::string SampleFile = sample.substr(1);
 
 
-//    if (subStream) {
-//      loadWAV.WAVOpen(inputWAV);
-//    }
-//
+    std::size_t Stream = std::stoul(SampleFile);
+    std::vector<int16_t> params = {static_cast<int16_t>(Stream), static_cast<int16_t>(start),
+                                   static_cast<int16_t>(finish)};
 
-    const size_t inDuration = loadWAVMain.GetDuration();
+    loadWAVSub.WAVOpen(fileNames[Stream - 1]);
+
+    converter = converter->makeConverter(command, params);
+
+
+    const size_t inDuration = loadWAVSub.GetDuration();
 
     while (!converter->ConvFinished() && converter->ReadSecond() < inDuration) {
       const std::size_t readSecond = converter->ReadSecond();

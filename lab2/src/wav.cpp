@@ -128,7 +128,7 @@ void WAVLoader::FindData(){
     InputFile.read(reinterpret_cast<char *>(&DataChunk), sizeof(DataChunk));
     if (InputFile.fail())
     {
-
+      throw FileFailure();
     }
     DataStart += sizeof(DataChunk);
     if (DataChunk.subchunk2ID == DATA)
@@ -140,7 +140,7 @@ void WAVLoader::FindData(){
     InputFile.seekg(DataChunk.subchunk2Size, std::fstream::cur);
     if (InputFile.fail())
     {
-
+      throw FileFailure();
     }
     DataStart += DataChunk.subchunk2Size;
   }
@@ -149,7 +149,7 @@ void WAVLoader::FindData(){
 void WAVLoader::GetData(std::vector<int16_t>& Data, const std::size_t second)
 {
   InputFile.seekg(DataStart + second * Data.size() * sizeof(*Data.data()), std::ios::beg);
-  InputFile.read(reinterpret_cast<char*>(Data.data()), sizeof(*Data.data()));
+  InputFile.read(reinterpret_cast<char*>(Data.data()), SAMPLE_RATE * sizeof(*Data.data()));
   if(InputFile.fail())
   {
     throw FileFailure();
@@ -203,7 +203,7 @@ void WAVWriter::WriteHeader(const std::size_t Duration)
 void WAVWriter::WriteData(std::vector<int16_t>& Data, const std::size_t second)
 {
   OutputFile.seekp(dataStart + second * Data.size() * sizeof(*Data.data()), std::ios::beg);
-  OutputFile.write(reinterpret_cast<char*> (Data.data()), Data.size() * sizeof(*Data.data()));
+  OutputFile.write(reinterpret_cast<char*> (Data.data()), SAMPLE_RATE * sizeof(*Data.data()));
 
   if (OutputFile.fail())
   {

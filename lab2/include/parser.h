@@ -14,7 +14,7 @@ class Parser
 
 public:
   std::ifstream inputFile;
-  std::string inputWAV;
+  std::string WAVPath_;
   std::string outputWAV;
 
   Parser(const std::string& fileName);

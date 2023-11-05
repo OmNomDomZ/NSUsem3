@@ -14,7 +14,3 @@ add_executable(${PROGRAM_NAME} ${SOURCE_DIRS})
 target_compile_options(${PROGRAM_NAME} PRIVATE -pedantic -Wall -Werror)
 target_include_directories(${PROGRAM_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/wav)
-#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/converters")
-
-#target_link_libraries(${PROGRAM_NAME} PUBLIC wav)
