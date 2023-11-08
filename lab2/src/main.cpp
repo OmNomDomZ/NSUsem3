@@ -1,13 +1,11 @@
-#include "commander.h"
-#include <iostream>
+#include "../include/commander.h"
 #include <string>
-#include <converters.h>
-#include "wav.h"
+
 int main(int argc, char *argv[])
 {
   if (argc < 4)
   {
-    return 0;
+    throw InvalidNum();
   }
   std::string FilePath{argv[1]};
   std::string outputWAV{argv[2]};

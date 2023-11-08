@@ -25,7 +25,10 @@ public:
   void GetData(std::vector<int16_t> &Data, const std::size_t Duration);
 
   std::size_t GetDuration() const;
+
   void FindData();
+
+  void FindRIFF();
 };
 
 class WAVWriter {

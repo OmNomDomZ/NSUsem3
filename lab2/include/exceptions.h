@@ -69,3 +69,15 @@ class InvalidCommand : public Exception
 public:
   InvalidCommand();
 };
+
+class InvalidNum : public Exception
+{
+public:
+  InvalidNum();
+};
+
+class InvalidArgumentPassed : public Exception
+{
+public:
+  InvalidArgumentPassed();
+};

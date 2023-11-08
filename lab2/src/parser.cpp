@@ -1,8 +1,8 @@
 #include "parser.h"
 
-#include "converters.h"
-#include "folder_reader.h"
-#include "wav.h"
+#include "../include/converters.h"
+#include "../include/folder_reader.h"
+#include "../include/wav.h"
 
 #include <memory>
 #include <sstream>
@@ -11,6 +11,18 @@
 #include <vector>
 
 const std::size_t SAMPLE_RATE = 44100;
+
+bool isDigit(std::string& digit)
+{
+  for (char const &c : digit)
+  {
+    if (!isdigit(c))
+    {
+      return false;
+    }
+  }
+  return true;
+}
 
 Parser::Parser(const std::string& WAVPath, const std::string& outputWAV, const std::string& fileName)
 {
@@ -60,17 +72,26 @@ void Parser::ParseCommand() {
     }
 
     std::string sample;
-    std::size_t start, finish;
+    std::string start, finish;
     if (!(iss >> sample >> start >> finish)) {
       continue;
+    }
+
+    if (!isDigit(start) || !isDigit(finish))
+    {
+      throw InvalidArgumentPassed();
     }
 
     std::string SampleFile = sample.substr(1);
 
 
+
     std::size_t Stream = std::stoul(SampleFile);
-    std::vector<int16_t> params = {static_cast<int16_t>(Stream), static_cast<int16_t>(start),
-                                   static_cast<int16_t>(finish)};
+    std::size_t Start = std::stoul(start);
+    std::size_t Finish = std::stoul(finish);
+
+    std::vector<int16_t> params = {static_cast<int16_t>(Stream), static_cast<int16_t>(Start),
+                                   static_cast<int16_t>(Finish)};
 
     loadWAVSub.WAVOpen(fileNames[Stream - 1]);
 

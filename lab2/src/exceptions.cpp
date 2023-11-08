@@ -32,3 +32,9 @@ FileFailure::FileFailure()
 
 InvalidCommand::InvalidCommand()
     : Exception("Invalid Command"){}
+
+InvalidNum::InvalidNum()
+    : Exception("incorrect number of arguments submitted"){}
+
+InvalidArgumentPassed::InvalidArgumentPassed()
+    : Exception("invalid argument passed"){}

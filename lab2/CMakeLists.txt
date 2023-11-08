@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 get_filename_component(PROGRAM_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 message(STATUS "PROGRAM_NAME: ${PROGRAM_NAME}")
 
+set( CMAKE_CXX_COMPILER "/pathto/g++" )
+set( CMAKE_C_COMPILER "/pathto/gcc" )
+
 project(${PROGRAM_NAME} CXX)
 
 set(CMAKE_CXX_STANDARD 20)

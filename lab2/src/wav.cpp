@@ -83,12 +83,14 @@ void WAVLoader::WAVOpen(const std::string& FileName)
 void WAVLoader::GetHeader()
 {
   RIFF_t InputRIFF{};
-  FMT_t InputFMT{};
+//  FMT_t InputFMT{};
   InputFile.read(reinterpret_cast<char *> (&InputRIFF), sizeof(InputRIFF));
-  InputFile.read(reinterpret_cast<char *> (&InputFMT), sizeof(InputFMT));
+//  InputFile.read(reinterpret_cast<char *> (&InputFMT), sizeof(InputFMT));
+
+  FindRIFF();
 
   DataStart += sizeof(InputRIFF);
-  DataStart += sizeof(InputFMT);
+//  DataStart += sizeof(InputFMT);
 
   if (InputRIFF.chunkID != RIFF)
   {
@@ -98,6 +100,52 @@ void WAVLoader::GetHeader()
   if (InputRIFF.format != WAVE)
   {
     throw FormatException();
+  }
+
+//  if (InputFMT.subchunk1ID != FMT)
+//  {
+//    throw FMTException();
+//  }
+//
+//  if (InputFMT.audioFormat != AUDIO_FORMAT)
+//  {
+//    throw AudioFormatException();
+//  }
+//
+//  if (InputFMT.numChannels != NUM_CHANNELS)
+//  {
+//    throw NumChannelsException();
+//  }
+//
+//  if (InputFMT.sampleRate != SAMPLE_RATE)
+//  {
+//    throw SampleRateException();
+//  }
+}
+
+void WAVLoader::FindRIFF()
+{
+  FMT_t InputFMT{};
+  while (!InputFile.eof())
+  {
+    InputFile.read(reinterpret_cast<char *>(&InputFMT), sizeof(InputFMT));
+    if (InputFile.fail())
+    {
+      throw FileFailure();
+    }
+    DataStart += sizeof(InputFMT);
+    if (InputFMT.subchunk1ID == FMT)
+    {
+      DataSize_ = InputFMT.subchunk1Size;
+      return;
+    }
+
+    InputFile.seekg(InputFMT.subchunk1Size, std::fstream::cur);
+    if (InputFile.fail())
+    {
+      throw FileFailure();
+    }
+    DataStart += InputFMT.subchunk1Size;
   }
 
   if (InputFMT.subchunk1ID != FMT)
@@ -119,6 +167,7 @@ void WAVLoader::GetHeader()
   {
     throw SampleRateException();
   }
+
 }
 
 void WAVLoader::FindData(){
