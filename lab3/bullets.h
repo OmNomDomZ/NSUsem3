@@ -22,12 +22,16 @@ private:
     steady_clock_t last_time;
   };
 
-  int bulletDirection;
   std::vector<Bullet> bullets;
 
-  const int bullet_color_pair = 3;
+  int bulletSpeed;
+
+  int bulletDirection;
+
+  int bullet_color_pair;
 
 public:
+
   void get();
 
   void action() override;
@@ -36,8 +40,11 @@ public:
 
   void addBullet(int w, int h, steady_clock_t time);
 
-  void defineBulletDirection(int h);
+  void defineBulletDirection(int h, int h1);
 
+  void setBulletSpeed(int speed);
+
+  void setBulletColor(const int color);
 };
 
 #endif

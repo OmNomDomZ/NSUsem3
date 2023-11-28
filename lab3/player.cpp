@@ -11,8 +11,11 @@ void player::getPosition() {
   h = h1/2;
   w = w1/2;
   init_pair(player_color_pair, COLOR_YELLOW, COLOR_BLUE);
+  init_pair(player_bullet_color_pair, COLOR_GREEN, COLOR_BLACK);
 
-  playerBullets.get();
+  playerBullets.setBulletColor(player_bullet_color_pair);
+  playerBullets.setBulletSpeed(playerBulletSpeed);
+  playerBullets.defineBulletDirection(h, h1);
 }
 
 void player::move(int c) {
