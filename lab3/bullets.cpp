@@ -44,3 +44,8 @@ void bullets::setBulletSpeed(int speed) {
 void bullets::setBulletColor(const int color) {
   bullet_color_pair = color;
 }
+
+std::vector<bullets::Bullet>& bullets::getBullets()
+{
+  return bullets;
+}

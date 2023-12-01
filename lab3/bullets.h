@@ -30,6 +30,9 @@ private:
 
   int bullet_color_pair;
 
+  int screenHeight;
+  int screenWidth;
+
 public:
 
   void get();
@@ -45,6 +48,8 @@ public:
   void setBulletSpeed(int speed);
 
   void setBulletColor(const int color);
+
+  std::vector<Bullet>& getBullets();
 };
 
 #endif
