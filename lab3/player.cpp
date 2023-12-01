@@ -4,18 +4,21 @@
 #include <curses.h>
 #include <algorithm>
 
+player::player()
+{
+  getmaxyx(stdscr, screenHeight, screenWidth);
 
-void player::getPosition() {
-  int h1, w1;
-  getmaxyx(stdscr, h1, w1);
-  h = h1/2;
-  w = w1/2;
+  h = screenHeight / 2;
+  w = screenWidth / 2;
+
+  ok = 1;
+
   init_pair(player_color_pair, COLOR_YELLOW, COLOR_BLUE);
   init_pair(player_bullet_color_pair, COLOR_GREEN, COLOR_BLACK);
 
   playerBullets.setBulletColor(player_bullet_color_pair);
   playerBullets.setBulletSpeed(playerBulletSpeed);
-  playerBullets.defineBulletDirection(h, h1);
+  playerBullets.defineBulletDirection(h, screenHeight);
 }
 
 void player::move(int c) {
@@ -40,3 +43,27 @@ void player::action() {
   playerBullets.action();
   playerBullets.removeBullets();
 }
+
+bullets& player::getBullets() {
+  return playerBullets;
+}
+
+int player::getHeight() {
+  return h;
+}
+
+int player::getWidth() {
+  return w;
+}
+
+bool player::isAlive()
+{
+  return ok;
+}
+
+void player::dead()
+{
+  ok = false;
+}
+
+

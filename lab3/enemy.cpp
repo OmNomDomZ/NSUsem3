@@ -69,8 +69,10 @@ void enemy::action()
     if ((now() - enemy.last_time) / 1ms > enemySpeed) {
       if (randomNum == 1)
       {
-        DownMove(enemy);
-        removeEnemy();
+        if (enemy.h <= screenHeight - 7)
+        {
+          DownMove(enemy);
+        }
       }
       move(enemy);
       enemy.last_time = now();
@@ -87,10 +89,21 @@ void enemy::DownMove(enemy::Enemy &enemy) {
   ++enemy.h;
 }
 
-void enemy::removeEnemy() {
-  enemies.erase(
-      std::remove_if(enemies.begin(), enemies.end(), [this](const Enemy& enemy) {return enemy.h >= (screenHeight - 1);}),
-      enemies.end()
-      );
+std::vector<enemy::Enemy>& enemy::getEnemies() {
+  return enemies;
 }
 
+void enemy::removeEnemy(const enemy::Enemy& enemyToRemove) {
+  auto it = std::find_if(enemies.begin(), enemies.end(),
+                         [&enemyToRemove](const Enemy& enemy) {
+                           return enemy.w == enemyToRemove.w && enemy.h == enemyToRemove.h;
+                         });
+
+  if (it != enemies.end()) {
+    enemies.erase(it);
+  }
+}
+
+bullets& enemy::getBullets() {
+  return enemyBullets;
+}

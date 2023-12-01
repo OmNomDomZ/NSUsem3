@@ -23,14 +23,13 @@ private:
 
   bullets enemyBullets;
 
-  int const enemyBulletsSpeed = 700;
+  int const enemyBulletsSpeed = 1000;
 
-  int const enemySpeed = 400;
+  int const enemySpeed = 1000;
 
   int const numEnemies = 5;
 
   std::vector<Enemy> enemies;
-
 
 public:
   enemy();
@@ -43,8 +42,11 @@ public:
 
   void DownMove(Enemy& enemy);
 
-  void removeEnemy();
+  std::vector<enemy::Enemy>& getEnemies();
 
+  void removeEnemy(const Enemy& enemy);
+
+  bullets& getBullets();
 };
 
 #endif
