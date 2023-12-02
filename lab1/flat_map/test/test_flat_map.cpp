@@ -310,4 +310,19 @@ TEST(FlatMapTest, MoveAssignmentOperator)
     EXPECT_EQ(map2["key2"], "value2") << map2["key2"];
 }
 
+TEST(FlatMapTest, ChangingValueByIterator)
+{
+    FlatMap map;
+    for (const auto& param : TestCase4)
+    {
+        map[param[0]] = param[1];
+    }
+
+    EXPECT_EQ(map["key1"], "value1") << map["key1"];
+    auto it  = map.find("key1");
+
+    (*it).value = "newValue";
+    EXPECT_EQ(map["key1"], "newValue") << map["key1"];
+}
+
 

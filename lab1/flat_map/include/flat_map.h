@@ -82,7 +82,7 @@ public:
             return current != other.current;
           }
 
-          element operator*() const
+          element& operator*() const
           {
             return *current;
           }
