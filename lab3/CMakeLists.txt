@@ -17,7 +17,7 @@ if(WIN32 OR MSVC)
     FetchContent_MakeAvailable(PDcurses)
 endif()
 
-add_executable(${exe_name} main.cpp player.cpp bullets.cpp gameScreen.cpp gameObject.cpp enemy.cpp gameEngine.cpp)
+add_executable(${exe_name} main.cpp player.cpp gameScreen.cpp gameObject.cpp gameEngine.cpp bullets.cpp enemy.cpp)
 
 if(WIN32 OR MSVC)
     target_link_libraries(${exe_name} PDcurses)

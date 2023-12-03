@@ -6,9 +6,7 @@
 enemy::enemy() : enemies(numEnemies, {0, 0, now()})
 {
   getmaxyx(stdscr, screenHeight, screenWidth);
-}
 
-void enemy::getPosition() {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> distr(1, 1000);
@@ -21,40 +19,32 @@ void enemy::getPosition() {
 
     std::uniform_int_distribution<> distr(count * screenWidth / numEnemies, screenWidth / numEnemies * (count + 1));
 
-    enemy.h = 2;
+    enemy.h = 3;
 
     int randomNum = distr(gen);
     enemy.w = randomNum % screenWidth;
 
-    init_pair(enemy_color_pair, COLOR_BLACK, COLOR_RED);
-    init_pair(enemy_bullet_color, COLOR_RED, COLOR_BLACK);
-
-    enemyBullets.setBulletSpeed(enemyBulletsSpeed);
-    enemyBullets.setBulletColor(enemy_bullet_color);
-    enemyBullets.defineBulletDirection(enemy.h, screenHeight);
+    init_pair(enemy_color_pair, COLOR_WHITE, COLOR_YELLOW);
 
     count++;
   }
 }
 
-void enemy::move(Enemy& enemy)
-{
+void enemy::move(int& enemyWidth, std::vector<std::pair<int, int>> position, int bulletPosition) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> distr(1, 10);
-  int direction = distr(gen);
+  int randomNum = distr(gen);
 
-  if (direction % 2 == 0 && enemy.w < screenWidth - 2)
+  if (randomNum % 2 == 0 && enemyWidth < screenWidth - 2)
   {
-    enemy.w++;
+    enemyWidth++;
   }
-  else if (enemy.w > 1)
+  else if (enemyWidth > 1)
   {
-    enemy.w--;
+    enemyWidth--;
   }
-
 }
-
 
 void enemy::action()
 {
@@ -64,8 +54,7 @@ void enemy::action()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(1, 10);
     int randomNum = distr(gen);
-
-  attron(COLOR_PAIR(enemy_color_pair));
+    attron(COLOR_PAIR(enemy_color_pair));
     if ((now() - enemy.last_time) / 1ms > enemySpeed) {
       if (randomNum == 1)
       {
@@ -74,23 +63,21 @@ void enemy::action()
           DownMove(enemy);
         }
       }
-      move(enemy);
+      move(enemy.w, {}, 0);
       enemy.last_time = now();
-      enemyBullets.addBullet(enemy.w, enemy.h, now());
     }
     out(enemy.h, enemy.w, "Z");
-    enemyBullets.action();
-    enemyBullets.removeBullets();
   attroff(COLOR_PAIR(enemy_color_pair));
   }
 }
 
-void enemy::DownMove(enemy::Enemy &enemy) {
-  ++enemy.h;
-}
-
-std::vector<enemy::Enemy>& enemy::getEnemies() {
-  return enemies;
+std::vector<std::pair<int, int>> enemy::getObjects() {
+  std::vector<std::pair<int, int>> positions;
+  for (auto i = enemies.begin(); i < enemies.end(); ++i)
+  {
+    positions.emplace_back(i->h, i->w);
+  }
+  return positions;
 }
 
 void enemy::removeEnemy(const enemy::Enemy& enemyToRemove) {
@@ -104,6 +91,24 @@ void enemy::removeEnemy(const enemy::Enemy& enemyToRemove) {
   }
 }
 
-bullets& enemy::getBullets() {
-  return enemyBullets;
+void enemy::DownMove(enemy::Enemy &enemy) {
+  ++enemy.h;
 }
+
+int enemy::getBulletDirection() {
+  return bulletDirection;
+}
+
+void enemy::removeObject(std::pair<int, int> object) {
+  for (auto& enemy : enemies)
+  {
+    if(enemy.h == object.first && enemy.w == object.second)
+    {
+      removeEnemy(enemy);
+    }
+  }
+
+}
+int enemy::getInf() { return numEnemies; }
+
+void enemy::changeInf() {numEnemies--;}

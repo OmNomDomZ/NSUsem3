@@ -9,34 +9,33 @@ private:
   int h;
   int w;
 
-  bool ok;
+  bool isAlive_ = true;
 
   int screenHeight;
   int screenWidth;
 
+  const int bulletDirection = -1;
+
   const int player_color_pair = 1;
-  const int player_bullet_color_pair = 2;
 
-  bullets playerBullets;
-
-  const int playerBulletSpeed = 400;
+  int score = 0;
 
 public:
   player();
 
-  void move(int c);
+  void move(int& c, std::vector<std::pair<int, int>> position, int bulletPosition) override;
 
   void action() override;
 
-  bullets& getBullets();
+  std::vector<std::pair<int, int>> getObjects() override;
 
-  int getHeight();
+  int getBulletDirection() override;
 
-  int getWidth();
+  void removeObject(std::pair<int, int> object) override;
 
-  bool isAlive();
+  int getInf() override;
 
-  void dead();
+  void changeInf() override;
 
 };
 

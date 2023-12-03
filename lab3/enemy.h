@@ -9,8 +9,8 @@ class enemy : public gameObject{
 private:
   struct Enemy
   {
-    int h;
-    int w;
+    int h{};
+    int w{};
     steady_clock_t last_time;
   };
 
@@ -19,34 +19,35 @@ private:
 
   const int enemy_color_pair = 3;
 
-  int const enemy_bullet_color = 4;
+  const int enemySpeed = 1500;
 
-  bullets enemyBullets;
+  int numEnemies = 4;
 
-  int const enemyBulletsSpeed = 1000;
-
-  int const enemySpeed = 1000;
-
-  int const numEnemies = 5;
+  const int bulletDirection = 1;
 
   std::vector<Enemy> enemies;
 
 public:
+
   enemy();
 
-  void getPosition();
-
-  void move(Enemy& enemy);
+  void move(int& c, std::vector<std::pair<int, int>> position, int bulletPosition) override;
 
   void action() override;
 
-  void DownMove(Enemy& enemy);
+  std::vector<std::pair<int, int>> getObjects() override;
 
-  std::vector<enemy::Enemy>& getEnemies();
+  int getBulletDirection() override;
 
-  void removeEnemy(const Enemy& enemy);
+  void removeObject(std::pair<int, int> object) override;
 
-  bullets& getBullets();
+  int getInf() override;
+
+  void changeInf() override;
+
+  void removeEnemy(const enemy::Enemy& enemyToRemove) ;
+
+      void DownMove(Enemy &enemy);
 };
 
 #endif

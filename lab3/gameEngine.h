@@ -4,18 +4,23 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullets.h"
+#include "gameScreen.h"
 
 class gameEngine{
 private:
-  player player_;
-  enemy enemies_;
-  bullets playerBullets;
-  bullets enemyBullets;
+  gameObject* player_;
+  gameObject* enemies_;
+  gameObject* playerBullets;
+  gameObject* enemiesBullets;
+
+  int enemiesBulletFire = ' ';
+
+  gameScreen gameScreen;
 
   bool isGameOver = true;
 
 public:
-  gameEngine(player& playerObjRef, enemy& enemyObjRef);
+  gameEngine(class gameScreen& gameScreenObj);
 
   void update(int c);
 
@@ -26,6 +31,8 @@ public:
   void gameOver();
 
   bool gameStatus();
+
+  void printGameOver();
 };
 
 

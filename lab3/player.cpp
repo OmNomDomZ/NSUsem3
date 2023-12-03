@@ -11,59 +11,42 @@ player::player()
   h = screenHeight / 2;
   w = screenWidth / 2;
 
-  ok = 1;
-
   init_pair(player_color_pair, COLOR_YELLOW, COLOR_BLUE);
-  init_pair(player_bullet_color_pair, COLOR_GREEN, COLOR_BLACK);
-
-  playerBullets.setBulletColor(player_bullet_color_pair);
-  playerBullets.setBulletSpeed(playerBulletSpeed);
-  playerBullets.defineBulletDirection(h, screenHeight);
 }
 
-void player::move(int c) {
+void player::move(int&c, std::vector<std::pair<int, int>> position, int bulletPosition) {
   switch(c) {
-  case KEY_LEFT: --w; break;
-  case KEY_RIGHT: ++w; break;
-  case KEY_UP: --h; break;
-  case KEY_DOWN: ++h; break;
-  case ' ': playerBullets.addBullet(w, h, now()); break;
+    case KEY_LEFT: --w; break;
+    case KEY_RIGHT: ++w; break;
+    case KEY_UP: --h; break;
+    case KEY_DOWN: ++h; break;
   }
 }
 
 void player::action() {
   int h1, w1;
   getmaxyx(stdscr, h1, w1);
+  h = std::clamp(h, 1, h1-3);
   w = std::clamp(w, 1, w1-2);
-  h = std::clamp(h, 1, h1-2);
   attron(COLOR_PAIR(player_color_pair));
   out(h, w, "M");
   attroff(COLOR_PAIR(player_color_pair));
-
-  playerBullets.action();
-  playerBullets.removeBullets();
 }
 
-bullets& player::getBullets() {
-  return playerBullets;
+int player::getBulletDirection() {
+  return bulletDirection;
 }
 
-int player::getHeight() {
-  return h;
+std::vector<std::pair<int, int>> player::getObjects() {
+  std::vector<std::pair<int, int>> positions;
+  positions.emplace_back(h, w);
+  return positions;
 }
 
-int player::getWidth() {
-  return w;
+void player::removeObject(std::pair<int, int> object) {
+  isAlive_ = false;
 }
 
-bool player::isAlive()
-{
-  return ok;
-}
+int player::getInf() { return score; }
 
-void player::dead()
-{
-  ok = false;
-}
-
-
+void player::changeInf() {score++;}

@@ -1,11 +1,7 @@
 #ifndef LAB3_BULLETS_H
 #define LAB3_BULLETS_H
 
-#include "gameScreen.h"
-#include <iostream>
 #include <vector>
-#include <chrono>
-#include <curses.h>
 #include <algorithm>
 
 #include "gameObject.h"
@@ -17,39 +13,44 @@ using steady_clock_t = std::chrono::time_point<std::chrono::steady_clock>;
 class bullets : public gameObject{
 private:
   struct Bullet {
-    int w;
     int h;
+    int w;
     steady_clock_t last_time;
   };
 
   std::vector<Bullet> bullets;
 
-  int bulletSpeed;
+  const int bulletSpeed = 500;
+  const int bullet_color_pair = 2;
 
-  int bulletDirection;
+  int bulletDirection = 0;
 
-  int bullet_color_pair;
+  int screenHeight = 0;
+  int screenWidth = 0;
 
-  int screenHeight;
-  int screenWidth;
 
 public:
 
-  void get();
+  void move(int& c, std::vector<std::pair<int, int>> position, int bulletPosition) override;
 
   void action() override;
+
+  std::vector<std::pair<int, int>> getObjects() override;
+
+  int getBulletDirection() override;
+
+  void removeObject(std::pair<int, int> object) override;
+
+  int getInf() override;
+
+  void changeInf() override;
 
   void removeBullets();
 
   void addBullet(int w, int h, steady_clock_t time);
 
-  void defineBulletDirection(int h, int h1);
+  void defineBulletDirection(int bulletDirection);
 
-  void setBulletSpeed(int speed);
-
-  void setBulletColor(const int color);
-
-  std::vector<Bullet>& getBullets();
 };
 
 #endif

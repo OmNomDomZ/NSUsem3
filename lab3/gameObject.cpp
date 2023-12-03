@@ -1,5 +1,7 @@
 #include "gameObject.h"
 
+#include "bullets.h"
+
 void gameObject::out(int y, int x, const std::string &s) {
   wmove(stdscr, y, x);
   wprintw(stdscr, "%s", s.c_str());

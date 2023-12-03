@@ -36,12 +36,14 @@ void gameScreen::getConsoleDimensions() {
   getmaxyx(stdscr, h1, w1);
 }
 
-void gameScreen::printTitle() {
-//  ssize_t title_size = snprintf(NULL, 0, title_format_str, bullets.size());
-  ssize_t title_size = snprintf(NULL, 0, title_format_str, 0);
-  wmove(stdscr, 1, (w1-title_size)/2);
-  wprintw(stdscr, title_format_str, 0);
-//  wprintw(stdscr, title_format_str, bullets.size());
+void gameScreen::printTitle(int score, int numEnemies) {
+  ssize_t title_size1 = snprintf(NULL, 0, title_format_score_str, score);
+  wmove(stdscr, 1, 1);
+  wprintw(stdscr, title_format_score_str, score);
+
+  ssize_t title_size2 = snprintf(NULL, 0, title_format_numOfEnemies_str, numEnemies);
+  wmove(stdscr, 2, 1);
+  wprintw(stdscr, title_format_numOfEnemies_str, numEnemies);
 }
 
 void gameScreen::displayTheBorder() {
@@ -57,4 +59,20 @@ void gameScreen::displayTheBorder() {
   out(0, w1-1, "+");
   out(h1-1, 0, "+");
   out(h1-1, w1-1, "+");
+}
+
+void gameScreen::gameOver() {
+  ssize_t title_size = snprintf(NULL, 0, title_gameOver_str, 0);
+  wmove(stdscr, h1/2, (w1-title_size)/2);
+  wprintw(stdscr, title_gameOver_str, 0);
+}
+
+void gameScreen::printWinTitle(int score) {
+  ssize_t title_size1 = snprintf(NULL, 0, title_Win_str);
+  wmove(stdscr, h1 / 2, (w1 - title_size1) / 2);
+  wprintw(stdscr, title_Win_str);
+
+  ssize_t title_size2 = snprintf(NULL, 0, title_format_score_str, score);
+  wmove(stdscr, h1 / 2 + 1, (w1 - title_size2) / 2);
+  wprintw(stdscr, title_format_score_str, score);
 }

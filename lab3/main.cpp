@@ -1,26 +1,22 @@
-
 #include <curses.h>
 
 #include "player.h"
 #include "bullets.h"
 #include "gameScreen.h"
 #include "enemy.h"
+#include "gameObject.h"
 #include "gameEngine.h"
+#include <thread>
 
 int main() {
+
   gameScreen gameScreen;
   gameScreen.makeScreen();
 
 
   gameScreen.getConsoleDimensions();
 
-  player player;
-
-  enemy enemy;
-  enemy.getPosition();
-
-
-  gameEngine gameEngine(player, enemy);
+  gameEngine gameEngine(gameScreen);
 
   int c;
 
@@ -29,24 +25,24 @@ int main() {
     // clear the screen
     clear();
 
-    // print title
-    gameScreen.printTitle();
-
-    gameScreen.displayTheBorder();
-
-//    player.move(c);
+    gameEngine.update(c);
 
     // discards user input that we haven't handled yet. MAY NOT BE WHAT YOU WANT!
     flushinp();
 
-//    player.action();
-//    enemy.action();
-
-    gameEngine.update(c);
-
     // don't forget to call refresh/wrefresh to make your changes visible
     refresh();
 
+  }
+
+  if (!gameEngine.gameStatus())
+  {
+    clear();
+    flushinp();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    refresh();
+
+    getch();
   }
 
   // returns terminal to its normal state. DO NOT FORGET TO CALL ON EXIT!
